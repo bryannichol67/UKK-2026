@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram id="YDReksGrjbhKr3goYB3H" name="Halaman-2">
-    <mxGraphModel dx="5656" dy="3108" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="1">
+    <mxGraphModel dx="703" dy="653" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="1">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -81,7 +81,7 @@
         <mxCell id="IIdDvtFaLl_X06jhnXKD-63" parent="IIdDvtFaLl_X06jhnXKD-59" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;labelBackgroundColor=none;rounded=1;fontColor=#5C5C5C;" value="email_verified_at (timestamp)" vertex="1">
           <mxGeometry height="30" width="210" y="116" as="geometry" />
         </mxCell>
-        <mxCell id="IIdDvtFaLl_X06jhnXKD-64" parent="IIdDvtFaLl_X06jhnXKD-59" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;labelBackgroundColor=none;rounded=1;fontColor=#5C5C5C;" value="&lt;div&gt;passsword (avrchar 255 NN)&lt;/div&gt;" vertex="1">
+        <mxCell id="IIdDvtFaLl_X06jhnXKD-64" parent="IIdDvtFaLl_X06jhnXKD-59" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;labelBackgroundColor=none;rounded=1;fontColor=#5C5C5C;" value="&lt;div&gt;passsword (varchar 255 NN)&lt;/div&gt;" vertex="1">
           <mxGeometry height="30" width="210" y="146" as="geometry" />
         </mxCell>
         <mxCell id="IIdDvtFaLl_X06jhnXKD-65" parent="IIdDvtFaLl_X06jhnXKD-59" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;labelBackgroundColor=none;rounded=1;fontColor=#5C5C5C;" value="remember_token (varchar 255 NN)" vertex="1">
@@ -439,11 +439,11 @@
             <mxPoint x="1440" y="967" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="IIdDvtFaLl_X06jhnXKD-178" edge="1" parent="1" source="IIdDvtFaLl_X06jhnXKD-101" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERmany;rounded=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endFill=0;startArrow=ERone;startFill=0;entryX=1.009;entryY=0.287;entryDx=0;entryDy=0;entryPerimeter=0;curved=0;labelBackgroundColor=none;fontColor=default;strokeColor=#006658;" target="IIdDvtFaLl_X06jhnXKD-123" value="">
+        <mxCell id="IIdDvtFaLl_X06jhnXKD-178" edge="1" parent="1" source="IIdDvtFaLl_X06jhnXKD-101" style="edgeStyle=orthogonalEdgeStyle;fontSize=12;html=1;endArrow=ERmany;rounded=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;endFill=0;startArrow=ERone;startFill=0;entryX=0.999;entryY=0.286;entryDx=0;entryDy=0;entryPerimeter=0;curved=0;labelBackgroundColor=none;fontColor=default;strokeColor=#006658;" target="IIdDvtFaLl_X06jhnXKD-123" value="">
           <mxGeometry height="100" relative="1" width="100" as="geometry">
             <Array as="points">
               <mxPoint x="1170" y="85" />
-              <mxPoint x="1170" y="495.57" />
+              <mxPoint x="1170" y="495.6" />
             </Array>
             <mxPoint x="1320" y="274" as="sourcePoint" />
             <mxPoint x="1130" y="247" as="targetPoint" />
