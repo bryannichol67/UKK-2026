@@ -14,7 +14,7 @@ include "crud.php";
 <body>
 
     <h1>Kelola Guru</h1>
-    <?php crud($koneksi, "t_guru", []); ?>
+    <?php crud($koneksi, "t_guru", ['sembunyi' => ['user_id']]); ?>
     <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
 
 </body>

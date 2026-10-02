@@ -10,10 +10,10 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 /*
-  Daftar menu sesuai use case.
-  Format: [nama menu, file halaman, role yang boleh akses]
-  Role yang tersedia: admin, guru, wali_kelas
-  (wali_kelas = akun guru yang terdaftar aktif di t_wali_kelas)
+    Daftar menu sesuai use case.
+    Format: [nama menu, file halaman, role yang boleh akses]
+    Role yang tersedia: admin, guru, wali_kelas
+    (wali_kelas = akun guru yang terdaftar aktif di t_wali_kelas)
 */
 $daftar_menu = [
     ['Kelola Siswa',               'kelola_siswa.php',               ['admin']],
@@ -25,11 +25,9 @@ $daftar_menu = [
     ['Kelola Kategori Pelanggaran','kelola_kategori_pelanggaran.php',['admin']],
     ['Kelola Jenis Pelanggaran',   'kelola_jenis_pelanggaran.php',   ['admin']],
     ['Catatan Pelanggaran',        'catatan_pelanggaran.php',        ['guru']],
-    ['Tindakan',                   'tindakan.php',                   ['guru']],
     ['Riwayat',                    'riwayat.php',                    ['guru']],
     ['Rekap Point',                'rekap_point.php',                ['guru']],
     ['Laporan',                    'laporan.php',                    ['admin', 'wali_kelas']],
-    ['Cetak / Eksport',            'cetak_eksport.php',              ['admin']],
 ];
 
 // Apakah user yang login punya salah satu role ini?
