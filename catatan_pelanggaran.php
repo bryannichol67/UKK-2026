@@ -1,21 +1,13 @@
 <?php
-include "cek_akses.php";
+require_once 'cek_akses.php';
+require_once 'koneksi.php';
+require_once 'crud.php';
 cek_role(['guru']);
-include "koneksi.php";
-include "crud.php";
+
+$opsi = require 'opsi_catatan_pelanggaran.php';
+mulai_sesi();
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Catatan Pelanggaran</title>
-</head>
-<body>
+<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
 
-    <h1>Catatan Pelanggaran</h1>
-    <?php crud($koneksi, "t_pelanggaran_siswa", []); ?>
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
-
-</body>
-</html>
+<h2>Catatan Pelanggaran</h2>
+<?php crud($koneksi, 't_pelanggaran_siswa', $opsi); ?>

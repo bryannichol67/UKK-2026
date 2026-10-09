@@ -14,6 +14,8 @@ $data = mysqli_query($koneksi, "SELECT nama_siswa, nama_kelas, COUNT(*) AS jumla
 </head>
 <body>
 
+    <p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
+
     <h1>Rekap Point</h1>
     <table class="tabel-data">
         <tr><th>No</th><th>Nama</th><th>Kelas</th><th>Jumlah Pelanggaran</th><th>Total Poin</th></tr>
@@ -27,7 +29,6 @@ $data = mysqli_query($koneksi, "SELECT nama_siswa, nama_kelas, COUNT(*) AS jumla
             </tr>
         <?php } ?>
     </table>
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
 
 </body>
 </html>

@@ -1,21 +1,13 @@
 <?php
-include "cek_akses.php";
+require_once 'cek_akses.php';
+require_once 'koneksi.php';
+require_once 'crud.php';
 cek_role(['admin']);
-include "koneksi.php";
-include "crud.php";
+
+$opsi = require 'opsi_tahun_ajaran.php';
+mulai_sesi();
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Kelola Tahun Ajaran</title>
-</head>
-<body>
+<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
 
-    <h1>Kelola Tahun Ajaran</h1>
-    <?php crud($koneksi, "t_tahun_ajaran", []); ?>
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
-
-</body>
-</html>
+<h2>Kelola Tahun Ajaran</h2>
+<?php crud($koneksi, 't_tahun_ajaran', $opsi); ?>

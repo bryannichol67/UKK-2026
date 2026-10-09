@@ -1,21 +1,13 @@
 <?php
-include "cek_akses.php";
+require_once 'cek_akses.php';
+require_once 'koneksi.php';
+require_once 'crud.php';
 cek_role(['admin']);
-include "koneksi.php";
-include "crud.php";
+
+$opsi = require 'opsi_kelas.php';
+mulai_sesi();
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Kelola Kelas</title>
-</head>
-<body>
+<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
 
-    <h1>Kelola Kelas</h1>
-    <?php crud($koneksi, "t_kelas", []); ?>
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
-
-</body>
-</html>
+<h2>Kelola Kelas</h2>
+<?php crud($koneksi, 't_kelas', $opsi); ?>

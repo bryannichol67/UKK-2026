@@ -1,3 +1,4 @@
+
 <?php
 // Fungsi CRUD umum: membaca struktur tabel otomatis, lalu menampilkan
 // daftar data + form tambah/ubah + hapus. Dipakai oleh halaman menu.
@@ -9,9 +10,30 @@
 //   'relasi'   => ['kolom_id' => ['t_tabel', 'kolom_yang_ditampilkan']]
 //                                           atur manual kolom relasi (opsional,
 //                                           biasanya terdeteksi otomatis)
-
+//   'terpisah' => 'siswa'                   form tambah/ubah + prosesnya dipisah ke file:
+//                                             tambah_data_siswa.php, proses_tambah_siswa.php,
+//                                             edit_data_siswa.php,   proses_edit_siswa.php
+//                                           (tanpa opsi ini, form tetap tampil di halaman yang sama)
+//   'kembali'  => 'kelola_siswa.php'        halaman daftar data (wajib jika memakai 'terpisah')
+ 
 function nama_aman($s) { return str_replace('`', '``', $s); }
-
+ 
+function mulai_sesi() {
+    if (session_status() === PHP_SESSION_NONE) { session_start(); }
+}
+ 
+// Nama file fitur terpisah, dibentuk dari opsi 'terpisah'
+function nama_file_fitur($opsi, $jenis) {
+    $n = $opsi['terpisah'] ?? '';
+    $peta = [
+        'tambah'        => "tambah_data_$n.php",
+        'ubah'          => "edit_data_$n.php",
+        'proses_tambah' => "proses_tambah_$n.php",
+        'proses_ubah'   => "proses_edit_$n.php",
+    ];
+    return $peta[$jenis];
+}
+ 
 // Nama kolom database -> label tampilan.
 // nis -> NIS, jenis_kelamin -> Jenis Kelamin, tahun_ajaran_id -> Tahun Ajaran
 function label_kolom($nama, $kustom = []) {
@@ -28,13 +50,13 @@ function label_kolom($nama, $kustom = []) {
     }
     return implode(' ', $kata);
 }
-
+ 
 // Pasangan teks untuk kolom tinyint(1): [teks untuk 1, teks untuk 0]
 function teks_boolean($nama) {
     if (stripos($nama, 'aktif') !== false) { return ['Aktif', 'Tidak Aktif']; }
     return ['Ya', 'Tidak'];
 }
-
+ 
 // Pilih kolom yang paling cocok untuk ditampilkan dari tabel relasi
 // (utamakan kolom yang namanya mengandung "nama", lalu kolom teks pertama).
 function kolom_nama_tampil($k, $tabelRef) {
@@ -49,13 +71,13 @@ function kolom_nama_tampil($k, $tabelRef) {
     }
     return 'id';
 }
-
+ 
 // Deteksi kolom relasi pada sebuah tabel, dari foreign key atau dari
 // penamaan kolom *_id (tahun_ajaran_id -> t_tahun_ajaran).
 // Hasil: ['kolom' => ['tabel' => ..., 'tampil' => ..., 'pilihan' => [id => teks]]]
 function relasi_tabel($k, $tabel, $manual = []) {
     $hasil = [];
-
+ 
     // 1) dari foreign key
     try {
         $s = mysqli_prepare($k, "SELECT COLUMN_NAME, REFERENCED_TABLE_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND REFERENCED_TABLE_NAME IS NOT NULL");
@@ -66,7 +88,7 @@ function relasi_tabel($k, $tabel, $manual = []) {
             $hasil[$row['COLUMN_NAME']] = ['tabel' => $row['REFERENCED_TABLE_NAME'], 'tampil' => null];
         }
     } catch (Throwable $e) {}
-
+ 
     // 2) dari penamaan *_id, jika tabel t_<nama> ada
     try {
         $r = mysqli_query($k, "SHOW COLUMNS FROM `" . nama_aman($tabel) . "`");
@@ -81,12 +103,12 @@ function relasi_tabel($k, $tabel, $manual = []) {
             }
         }
     } catch (Throwable $e) {}
-
+ 
     // 3) pengaturan manual
     foreach ($manual as $kol => $def) {
         $hasil[$kol] = ['tabel' => $def[0], 'tampil' => $def[1] ?? null];
     }
-
+ 
     // Isi daftar pilihan (id => teks) untuk tiap relasi
     foreach ($hasil as $kol => $info) {
         try {
@@ -102,7 +124,7 @@ function relasi_tabel($k, $tabel, $manual = []) {
     }
     return $hasil;
 }
-
+ 
 // Nilai dari database -> teks yang tampil di web.
 // status_aktif 1 -> Aktif, 0 -> Tidak Aktif; tahun_ajaran_id 7 -> nama tahun ajarannya
 function tampil_nilai($nama, $nilai, $tipe, $rel = []) {
@@ -116,7 +138,7 @@ function tampil_nilai($nama, $nilai, $tipe, $rel = []) {
     }
     return (string)$nilai;
 }
-
+ 
 // Ambil daftar tipe kolom: ['nama_kolom' => 'tipe', ...]
 function tipe_kolom($k, $tabel) {
     $hasil = [];
@@ -124,10 +146,9 @@ function tipe_kolom($k, $tabel) {
     while ($c = mysqli_fetch_assoc($r)) { $hasil[$c['Field']] = $c['Type']; }
     return $hasil;
 }
-
-function crud($k, $tabel, $opsi = []) {
-    $readonly = !empty($opsi['readonly']);
-    $labelKustom = $opsi['label'] ?? [];
+ 
+// Baca struktur tabel: semua kolom, kolom yang jadi input form, dan relasinya
+function siapkan_tabel($k, $tabel, $opsi) {
     $sembunyi = $opsi['sembunyi'] ?? [];
     $kolom = [];
     $r = mysqli_query($k, "SHOW COLUMNS FROM `$tabel`");
@@ -136,110 +157,202 @@ function crud($k, $tabel, $opsi = []) {
     $input = array_filter($kolom, function ($c) use ($sembunyi) {
         return !in_array($c['Field'], array_merge(['id', 'created_at', 'updated_at'], $sembunyi));
     });
-    $pesan = '';
-
-    if (!$readonly && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        try {
-            $aksi = $_POST['aksi'] ?? '';
-
-            // Apakah semua isian kosong? (pilihan Aktif/Tidak diabaikan karena selalu terisi)
-            $kosong = true;
-            foreach ($input as $c) {
-                if ($c['Type'] === 'tinyint(1)') { continue; }
-                if (trim((string)($_POST[$c['Field']] ?? '')) !== '') { $kosong = false; break; }
+    return [$kolom, $input, $rel];
+}
+ 
+// PROSES: tambah / ubah / hapus data.
+// $post berisi data yang dikirim form. Hasil: ['ok' => true/false, 'pesan' => '...']
+function simpan_data($k, $tabel, $opsi, $aksi, $post) {
+    try {
+        if ($aksi === 'hapus') {
+            $id = (int)($post['id'] ?? 0);
+            $s = mysqli_prepare($k, "DELETE FROM `$tabel` WHERE id = ?");
+            mysqli_stmt_bind_param($s, "i", $id);
+            mysqli_stmt_execute($s);
+            return ['ok' => true, 'pesan' => 'Data berhasil dihapus.'];
+        }
+ 
+        list($kolom, $input, $rel) = siapkan_tabel($k, $tabel, $opsi);
+        $labelKustom = $opsi['label'] ?? [];
+ 
+        // Apakah semua isian kosong? (pilihan Aktif/Tidak diabaikan karena selalu terisi)
+        $kosong = true;
+        foreach ($input as $c) {
+            if ($c['Type'] === 'tinyint(1)') { continue; }
+            if (trim((string)($post[$c['Field']] ?? '')) !== '') { $kosong = false; break; }
+        }
+        if ($kosong) {
+            return ['ok' => false, 'pesan' => 'Kamu harus memasukkan data terlebih dahulu.'];
+        }
+ 
+        // Kolom relasi wajib (NOT NULL) yang belum dipilih
+        foreach ($input as $c) {
+            $n = $c['Field'];
+            if (isset($rel[$n]) && $c['Null'] === 'NO' && trim((string)($post[$n] ?? '')) === '') {
+                return ['ok' => false, 'pesan' => 'Pilih ' . label_kolom($n, $labelKustom) . ' terlebih dahulu.'];
             }
-
-            // Kolom relasi wajib (NOT NULL) yang belum dipilih
-            $belumPilih = '';
-            foreach ($input as $c) {
-                $n = $c['Field'];
-                if (isset($rel[$n]) && $c['Null'] === 'NO' && trim((string)($_POST[$n] ?? '')) === '') {
-                    $belumPilih = label_kolom($n, $labelKustom);
-                    break;
-                }
+        }
+ 
+        $f = []; $v = [];
+        foreach ($input as $c) {
+            $val = $post[$c['Field']] ?? '';
+            if ($val === '' && $c['Null'] === 'YES') { $val = null; }
+            $f[] = $c['Field']; $v[] = $val;
+        }
+        if ($aksi === 'tambah') {
+            $sql = "INSERT INTO `$tabel` (`" . implode('`,`', $f) . "`) VALUES (" . implode(',', array_fill(0, count($f), '?')) . ")";
+        } else {
+            $sql = "UPDATE `$tabel` SET `" . implode('`=?,`', $f) . "`=? WHERE id = ?";
+            $v[] = $post['id'] ?? 0;
+        }
+        $s = mysqli_prepare($k, $sql);
+        mysqli_stmt_bind_param($s, str_repeat('s', count($v)), ...$v);
+        mysqli_stmt_execute($s);
+        return ['ok' => true, 'pesan' => 'Data berhasil disimpan.'];
+    } catch (Throwable $e) {
+        return ['ok' => false, 'pesan' => 'Gagal: ' . $e->getMessage()];
+    }
+}
+ 
+// FORM: tampilkan form tambah/ubah. $nilai = isian awal (data lama / isian sebelumnya).
+function tampil_form($k, $tabel, $opsi, $mode, $nilai = [], $id = null) {
+    list($kolom, $input, $rel) = siapkan_tabel($k, $tabel, $opsi);
+    $labelKustom = $opsi['label'] ?? [];
+    $ubah = ($mode === 'ubah');
+    $terpisah = !empty($opsi['terpisah']);
+    $action = $terpisah ? nama_file_fitur($opsi, $ubah ? 'proses_ubah' : 'proses_tambah') : '';
+    $batal = $terpisah ? ($opsi['kembali'] ?? '') : ($ubah ? basename($_SERVER['PHP_SELF']) : '');
+ 
+    echo "<h3>" . ($ubah ? "Ubah data" : "Tambah data") . "</h3>";
+    echo "<form method='POST'" . ($action !== '' ? " action='" . htmlspecialchars($action) . "'" : "") . ">";
+    echo "<input type='hidden' name='aksi' value='" . ($ubah ? 'ubah' : 'tambah') . "'>";
+    if ($ubah && $id !== null) { echo "<input type='hidden' name='id' value='" . (int)$id . "'>"; }
+    echo "<table class='tabel-data'>";
+    foreach ($input as $c) {
+        $n = $c['Field'];
+        $t = $c['Type'];
+        $val = $nilai[$n] ?? '';
+        $v = htmlspecialchars((string)$val);
+        echo "<tr><td>" . htmlspecialchars(label_kolom($n, $labelKustom)) . "</td><td>";
+        if (isset($rel[$n])) {
+            echo "<select name='$n'><option value=''>-- Pilih --</option>";
+            foreach ($rel[$n]['pilihan'] as $idPil => $teksPil) {
+                $dipilih = ((string)$val === (string)$idPil) ? ' selected' : '';
+                echo "<option value='" . htmlspecialchars((string)$idPil) . "'$dipilih>" . htmlspecialchars($teksPil) . "</option>";
             }
-
-            if ($aksi === 'hapus') {
-                $s = mysqli_prepare($k, "DELETE FROM `$tabel` WHERE id = ?");
-                mysqli_stmt_bind_param($s, "i", $_POST['id']);
-                mysqli_stmt_execute($s);
-                $pesan = 'Data berhasil dihapus.';
-            } elseif ($kosong) {
-                $pesan = 'Kamu harus memasukkan data terlebih dahulu.';
-            } elseif ($belumPilih !== '') {
-                $pesan = 'Pilih ' . $belumPilih . ' terlebih dahulu.';
-            } else {
-                $f = []; $v = [];
-                foreach ($input as $c) {
-                    $val = $_POST[$c['Field']] ?? '';
-                    if ($val === '' && $c['Null'] === 'YES') { $val = null; }
-                    $f[] = $c['Field']; $v[] = $val;
-                }
-                if ($aksi === 'tambah') {
-                    $sql = "INSERT INTO `$tabel` (`" . implode('`,`', $f) . "`) VALUES (" . implode(',', array_fill(0, count($f), '?')) . ")";
-                } else {
-                    $sql = "UPDATE `$tabel` SET `" . implode('`=?,`', $f) . "`=? WHERE id = ?";
-                    $v[] = $_POST['id'];
-                }
-                $s = mysqli_prepare($k, $sql);
-                mysqli_stmt_bind_param($s, str_repeat('s', count($v)), ...$v);
-                mysqli_stmt_execute($s);
-                $pesan = 'Data berhasil disimpan.';
-            }
-        } catch (Throwable $e) {
-            $pesan = 'Gagal: ' . $e->getMessage();
+            echo "</select>";
+        } elseif ($t === 'tinyint(1)') {
+            $sel = ((string)$val !== '') ? (string)$val : '1';
+            $teks = teks_boolean($n);
+            echo "<select name='$n'><option value='1'" . ($sel === '1' ? ' selected' : '') . ">" . $teks[0] . "</option><option value='0'" . ($sel === '0' ? ' selected' : '') . ">" . $teks[1] . "</option></select>";
+        } elseif ($t === 'text') {
+            echo "<textarea name='$n' rows='3' cols='30'>$v</textarea>";
+        } elseif ($t === 'date') {
+            echo "<input type='date' name='$n' value='$v'>";
+        } elseif (strpos($t, 'int') === 0) {
+            echo "<input type='number' name='$n' value='$v'>";
+        } else {
+            echo "<input type='text' name='$n' value='$v'>";
+        }
+        echo "</td></tr>";
+    }
+    echo "</table><button type='submit'>Simpan</button>";
+    if ($batal !== '') { echo " <a href='" . htmlspecialchars($batal) . "'>Batal</a>"; }
+    echo "</form>";
+}
+ 
+// HALAMAN FORM TERPISAH: dipakai di tambah_data_xxx.php dan edit_data_xxx.php
+// $mode = 'tambah' atau 'ubah' (mode ubah membaca ?id=... dari URL)
+function halaman_form($k, $tabel, $opsi, $mode) {
+    mulai_sesi();
+    $pesan = $_SESSION['pesan'] ?? '';
+    $old = $_SESSION['old'] ?? null;
+    unset($_SESSION['pesan'], $_SESSION['old']);
+ 
+    $id = null;
+    $nilai = [];
+    if ($mode === 'ubah') {
+        $id = (int)($_GET['id'] ?? 0);
+        $s = mysqli_prepare($k, "SELECT * FROM `$tabel` WHERE id = ?");
+        mysqli_stmt_bind_param($s, "i", $id);
+        mysqli_stmt_execute($s);
+        $nilai = mysqli_fetch_assoc(mysqli_stmt_get_result($s));
+        if (!$nilai) {
+            echo "<p>Data tidak ditemukan.</p><a href='" . htmlspecialchars($opsi['kembali'] ?? '') . "'>Kembali</a>";
+            return;
         }
     }
-
-    // Mode ubah: ambil data yang mau diedit
+    if (is_array($old)) { $nilai = array_merge($nilai, $old); }
+ 
+    if ($pesan !== '') { echo "<p><b>" . htmlspecialchars($pesan) . "</b></p>"; }
+    tampil_form($k, $tabel, $opsi, $mode, $nilai, $id);
+}
+ 
+// HALAMAN PROSES TERPISAH: dipakai di proses_tambah_xxx.php dan proses_edit_xxx.php
+// Tidak menampilkan apa-apa, hanya menyimpan lalu mengalihkan halaman.
+function proses_halaman($k, $tabel, $opsi, $aksi) {
+    mulai_sesi();
+    $kembali = $opsi['kembali'] ?? 'index.php';
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header("Location: $kembali");
+        exit;
+    }
+    $hasil = simpan_data($k, $tabel, $opsi, $aksi, $_POST);
+    $_SESSION['pesan'] = $hasil['pesan'];
+    if ($hasil['ok']) {
+        header("Location: $kembali");
+    } else {
+        $_SESSION['old'] = $_POST;
+        $balik = ($aksi === 'ubah')
+            ? nama_file_fitur($opsi, 'ubah') . '?id=' . (int)($_POST['id'] ?? 0)
+            : nama_file_fitur($opsi, 'tambah');
+        header("Location: $balik");
+    }
+    exit;
+}
+ 
+function crud($k, $tabel, $opsi = []) {
+    $readonly = !empty($opsi['readonly']);
+    $terpisah = !empty($opsi['terpisah']);
+    $labelKustom = $opsi['label'] ?? [];
+    $sembunyi = $opsi['sembunyi'] ?? [];
+    list($kolom, $input, $rel) = siapkan_tabel($k, $tabel, $opsi);
+    $pesan = '';
+ 
+    // Pesan dari halaman proses terpisah (setelah simpan)
+    mulai_sesi();
+    if (isset($_SESSION['pesan'])) {
+        $pesan = $_SESSION['pesan'];
+        unset($_SESSION['pesan']);
+    }
+ 
+    // Hapus selalu diproses di halaman daftar; tambah/ubah hanya jika form tidak dipisah
+    if (!$readonly && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $aksi = $_POST['aksi'] ?? '';
+        if ($aksi === 'hapus' || !$terpisah) {
+            $pesan = simpan_data($k, $tabel, $opsi, $aksi, $_POST)['pesan'];
+        }
+    }
+ 
+    // Mode ubah (hanya untuk form yang tidak dipisah): ambil data yang mau diedit
     $edit = null;
-    if (!$readonly && isset($_GET['ubah'])) {
+    if (!$readonly && !$terpisah && isset($_GET['ubah'])) {
         $s = mysqli_prepare($k, "SELECT * FROM `$tabel` WHERE id = ?");
         mysqli_stmt_bind_param($s, "i", $_GET['ubah']);
         mysqli_stmt_execute($s);
         $edit = mysqli_fetch_assoc(mysqli_stmt_get_result($s));
     }
-
+ 
     if ($pesan !== '') { echo "<p><b>" . htmlspecialchars($pesan) . "</b></p>"; }
-
+ 
     if (!$readonly) {
-        echo "<h3>" . ($edit ? "Ubah data" : "Tambah data") . "</h3>";
-        echo "<form method='POST'><input type='hidden' name='aksi' value='" . ($edit ? 'ubah' : 'tambah') . "'>";
-        if ($edit) { echo "<input type='hidden' name='id' value='" . (int)$edit['id'] . "'>"; }
-        echo "<table class='tabel-data'>";
-        foreach ($input as $c) {
-            $n = $c['Field'];
-            $t = $c['Type'];
-            $val = $edit ? $edit[$n] : '';
-            $v = htmlspecialchars((string)$val);
-            echo "<tr><td>" . htmlspecialchars(label_kolom($n, $labelKustom)) . "</td><td>";
-            if (isset($rel[$n])) {
-                echo "<select name='$n'><option value=''>-- Pilih --</option>";
-                foreach ($rel[$n]['pilihan'] as $idPil => $teksPil) {
-                    $dipilih = ((string)$val === (string)$idPil) ? ' selected' : '';
-                    echo "<option value='" . htmlspecialchars((string)$idPil) . "'$dipilih>" . htmlspecialchars($teksPil) . "</option>";
-                }
-                echo "</select>";
-            } elseif ($t === 'tinyint(1)') {
-                $sel = $edit ? (string)$val : '1';
-                $teks = teks_boolean($n);
-                echo "<select name='$n'><option value='1'" . ($sel === '1' ? ' selected' : '') . ">" . $teks[0] . "</option><option value='0'" . ($sel === '0' ? ' selected' : '') . ">" . $teks[1] . "</option></select>";
-            } elseif ($t === 'text') {
-                echo "<textarea name='$n' rows='3' cols='30'>$v</textarea>";
-            } elseif ($t === 'date') {
-                echo "<input type='date' name='$n' value='$v'>";
-            } elseif (strpos($t, 'int') === 0) {
-                echo "<input type='number' name='$n' value='$v'>";
-            } else {
-                echo "<input type='text' name='$n' value='$v'>";
-            }
-            echo "</td></tr>";
+        if ($terpisah) {
+            echo "<p><a href='" . htmlspecialchars(nama_file_fitur($opsi, 'tambah')) . "'>Tambah Data</a></p>";
+        } else {
+            tampil_form($k, $tabel, $opsi, $edit ? 'ubah' : 'tambah', $edit ?: [], $edit['id'] ?? null);
         }
-        echo "</table><button type='submit'>Simpan</button>";
-        if ($edit) { echo " <a href='" . basename($_SERVER['PHP_SELF']) . "'>Batal</a>"; }
-        echo "</form>";
     }
-
+ 
     // Daftar data (maksimal 100 terbaru)
     $tampil = array_filter($kolom, function ($c) use ($sembunyi) {
         return !in_array($c['Field'], array_merge(['created_at', 'updated_at'], $sembunyi));
@@ -256,7 +369,10 @@ function crud($k, $tabel, $opsi = []) {
             echo "<td>" . htmlspecialchars(tampil_nilai($c['Field'], $row[$c['Field']], $c['Type'], $rel)) . "</td>";
         }
         if (!$readonly) {
-            echo "<td><a href='?ubah=" . (int)$row['id'] . "'>Ubah</a> "
+            $linkUbah = $terpisah
+                ? htmlspecialchars(nama_file_fitur($opsi, 'ubah')) . "?id=" . (int)$row['id']
+                : "?ubah=" . (int)$row['id'];
+            echo "<td><a href='" . $linkUbah . "'>Ubah</a> "
                 . "<form method='POST' style='display:inline' onsubmit=\"return confirm('Hapus data ini?')\">"
                 . "<input type='hidden' name='aksi' value='hapus'><input type='hidden' name='id' value='" . (int)$row['id'] . "'>"
                 . "<button type='submit'>Hapus</button></form></td>";
@@ -266,3 +382,5 @@ function crud($k, $tabel, $opsi = []) {
     if ($no === 1) { echo "<tr><td colspan='99'>Belum ada data.</td></tr>"; }
     echo "</table></div>";
 }
+
+

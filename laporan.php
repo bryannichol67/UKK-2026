@@ -75,6 +75,8 @@ if ($aksi == 'cetak') {
 </head>
 <body>
 
+    <p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
+
     <h1>Laporan</h1>
 
     <p>
@@ -83,7 +85,6 @@ if ($aksi == 'cetak') {
     </p>
 
     <?php crud($koneksi, "t_pelanggaran_siswa", ['readonly' => true]); ?>
-    <p><a href="dashboard.php">Kembali ke Dashboard</a></p>
 
 </body>
 </html>
