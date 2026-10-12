@@ -1,7 +1,7 @@
 <?php
 include "cek_akses.php";
 cek_role(['admin', 'wali_kelas']);
-include "koneksi.php";
+include "config/koneksi.php";
 include "crud.php";
 
 $aksi = $_GET['aksi'] ?? '';
@@ -37,7 +37,7 @@ if ($aksi == 'cetak') {
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
+    
     <title>Cetak Laporan Pelanggaran Siswa</title>
 </head>
 <body onload="window.print()">
@@ -58,6 +58,7 @@ if ($aksi == 'cetak') {
                 <?php } ?>
             </tr>
         <?php } ?>
+        
     </table>
 
 </body>

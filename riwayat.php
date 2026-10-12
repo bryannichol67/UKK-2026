@@ -1,7 +1,7 @@
 <?php
 include "cek_akses.php";
 cek_role(['guru']);
-include "koneksi.php";
+include "config/koneksi.php";
 include "crud.php";
 ?>
 <!DOCTYPE html>

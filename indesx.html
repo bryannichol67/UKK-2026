@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bimbingan Insani</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome untuk Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS Internal (Dalam satu file yang sama) -->
+    <style>
+        /* --- Konfigurasi Warna Dasar & Background --- */
+        body {
+            background-color: #a2d2ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* --- Sidebar Styling --- */
+        .sidebar {
+            background: linear-gradient(180deg, #d0e1fd 0%, #ffffff 100%);
+            min-height: 100vh;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .brand-title {
+            font-size: 1rem;
+            color: #0d233a;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-list .nav-link {
+            color: #333333;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .menu-list .nav-link:hover,
+        .menu-list .nav-link.active {
+            background-color: rgba(255, 182, 193, 0.4);
+            color: #000;
+            font-weight: 500;
+        }
+
+        /* --- Tombol Logout --- */
+        .btn-logout {
+            background-color: #ffe5ec;
+            color: #d63384;
+            border: none;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #ffccd5;
+            color: #c9184a;
+        }
+
+        /* --- Topbar --- */
+        .topbar {
+            background-color: #ffffff;
+            border-radius: 50px;
+        }
+
+        /* --- Statistik Card & Gradient --- */
+        .stat-card {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .gradient-pink-1 {
+            background: linear-gradient(135deg, #ffccd5 0%, #ffffff 100%);
+        }
+        .gradient-pink-2 {
+            background: linear-gradient(135deg, #f8bbd0 0%, #ffffff 100%);
+        }
+        .gradient-purple {
+            background: linear-gradient(135deg, #e1bee7 0%, #ffffff 100%);
+        }
+
+        /* --- Main Content & Container Kartu Putih --- */
+        .main-card {
+            border-radius: 24px;
+            background-color: #ffffff;
+            border: none;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar d-flex flex-column justify-content-between p-3">
+                <div>
+                    <div class="text-center mb-4 pt-2">
+                        <div class="mb-2">
+                            <i class="fas fa-balance-scale fa-2x text-dark"></i>
+                        </div>
+                        <h5 class="fw-bold brand-title">BIMBINGAN INSANI</h5>
+                    </div>
+                    <ul class="nav flex-column menu-list">
+                        <li class="nav-item mb-1"><a href="#" class="nav-link active"><i class="fas fa-home me-2"></i> Dashboard</a></li>
+                        <li class="nav-item mb-1"><a href="#" class="nav-link"><i class="fas fa-user-graduate me-2"></i> Siswa</a></li>
+                        <li class="nav-item mb-1"><a href="#" class="nav-link"><i class="fas fa-users me-2"></i> Pengguna</a></li>
+                        <li class="nav-item mb-1"><a href="#" class="nav-link"><i class="fas fa-book me-2"></i> Catatan</a></li>
+                        <li class="nav-item mb-1"><a href="#" class="nav-link"><i class="fas fa-exclamation-circle me-2"></i> Point</a></li>
+                        <li class="nav-item mb-1"><a href="#" class="nav-link"><i class="fas fa-info-circle me-2"></i> Tentang</a></li>
+                    </ul>
+                </div>
+                <div class="p-2">
+                    <a href="#" class="btn btn-logout w-100 py-2"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+                </div>
+            </div>
+
+            <!-- Main Content / Dashboard -->
+            <div class="col-md-10 p-4">
+                <!-- Topbar -->
+                <div class="topbar d-flex justify-content-between align-items-center px-4 py-2 mb-4 shadow-sm">
+                    <span class="text-secondary">Selamat datang kembali !</span>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-bell me-3 text-secondary" style="cursor: pointer;"></i>
+                        <div class="bg-secondary rounded-circle text-white d-flex justify-content-center align-items-center me-2" style="width: 32px; height: 32px; font-size: 14px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="fw-bold me-1 text-dark" style="font-size: 14px;">Admin</span>
+                        <i class="fas fa-chevron-down small text-secondary" style="font-size: 11px;"></i>
+                    </div>
+                </div>
+
+                <!-- Info Cards / Statistik -->
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card stat-card p-3 shadow-sm gradient-pink-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-secondary mb-1">Siswa</h6>
+                                    <h3 class="fw-bold mb-0">1.247</h3>
+                                </div>
+                                <i class="fas fa-user-graduate fa-2x text-secondary opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <div class="card stat-card p-3 shadow-sm gradient-pink-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-secondary mb-1">Catatan</h6>
+                                    <h3 class="fw-bold mb-0">1.247</h3>
+                                </div>
+                                <i class="fas fa-book fa-2x text-secondary opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card p-3 shadow-sm gradient-purple">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-secondary mb-1">Pelanggan</h6>
+                                    <h3 class="fw-bold mb-0">1.247</h3>
+                                </div>
+                                <i class="fas fa-balance-scale fa-2x text-secondary opacity-50"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Catatan Bulan Ini (Tabel Card) -->
+                <div class="card main-card shadow-sm p-4">
+                    <h5 class="mb-4 text-dark fw-bold" style="font-size: 16px;">Informasi catatan bulan ini</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%;">No</th>
+                                    <th style="width: 30%;">Nama</th>
+                                    <th style="width: 20%;">Kelas</th>
+                                    <th style="width: 42%;">Catatan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Baris Kosong untuk Contoh Sesuai Desain -->
+                                <tr style="height: 60px;"><td></td><td></td><td></td><td></td></tr>
+                                <tr style="height: 60px;"><td></td><td></td><td></td><td></td></tr>
+                                <tr style="height: 60px;"><td></td><td></td><td></td><td></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
