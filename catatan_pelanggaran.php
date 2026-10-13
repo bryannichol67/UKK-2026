@@ -7,7 +7,5 @@ cek_role(['guru']);
 $opsi = require 'opsi_catatan_pelanggaran.php';
 mulai_sesi();
 ?>
-<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
-
 <h2>Catatan Pelanggaran</h2>
 <?php crud($koneksi, 't_pelanggaran_siswa', $opsi); ?>

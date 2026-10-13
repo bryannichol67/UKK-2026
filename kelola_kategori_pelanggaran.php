@@ -7,8 +7,6 @@ cek_role(['admin']);
 $opsi = require 'opsi_kategori_pelanggaran.php';
 mulai_sesi();
 ?>
-<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
-
 <h2>Kelola Kategori Pelanggaran</h2>
 
 

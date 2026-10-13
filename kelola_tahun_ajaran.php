@@ -7,8 +7,6 @@ cek_role(['admin']);
 $opsi = require 'opsi_tahun_ajaran.php';
 mulai_sesi();
 ?>
-<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
-
 <h2>Kelola Tahun Ajaran</h2>
 
 

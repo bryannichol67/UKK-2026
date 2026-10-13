@@ -13,8 +13,6 @@ include "crud.php";
 </head>
 <body>
 
-?>
-<p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
 <h2>Riwayat</h2>
 <?php crud($koneksi, 't_pelanggaran_siswa', ['readonly' => true]); ?>
 

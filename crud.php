@@ -311,7 +311,7 @@ function halaman_form($k, $tabel, $opsi, $mode) {
     }
     if (is_array($old)) { $nilai = array_merge($nilai, $old); }
 
-    if ($pesan !== '') { echo "<p><b>" . htmlspecialchars($pesan) . "</b></p>"; }
+    if ($pesan !== '') { echo "<div class='alert alert-danger'>" . htmlspecialchars($pesan) . "</div>"; }
     tampil_form($k, $tabel, $opsi, $mode, $nilai, $id);
 }
 
@@ -374,9 +374,9 @@ function crud($k, $tabel, $opsi = []) {
 
     // Urutan sama seperti kelola_siswa.php: tautan "+ Tambah data", lalu pesan
     if (!$readonly && $terpisah) {
-        echo "<p><a href='" . htmlspecialchars(nama_file_fitur($opsi, 'tambah')) . "'>+ Tambah data</a></p>";
+        echo "<p class='mb-3'><a class='btn btn-primary' href='" . htmlspecialchars(nama_file_fitur($opsi, 'tambah')) . "'>+ Tambah data</a></p>";
     }
-    if ($pesan !== '') { echo "<p><b>" . htmlspecialchars($pesan) . "</b></p>"; }
+    if ($pesan !== '') { echo "<div class='alert alert-info'>" . htmlspecialchars($pesan) . "</div>"; }
     if (!$readonly && !$terpisah) {
         tampil_form($k, $tabel, $opsi, $edit ? 'ubah' : 'tambah', $edit ?: [], $edit['id'] ?? null);
     }
@@ -404,8 +404,8 @@ function crud($k, $tabel, $opsi = []) {
             echo "<td>"
                 . "<form method='POST' style='display:inline' onsubmit=\"return confirm('Hapus data ini?')\">"
                 . "<input type='hidden' name='aksi' value='hapus'><input type='hidden' name='id' value='" . (int)$row['id'] . "'>"
-                . "<button type='submit'>Hapus</button></form> "
-                . "<a href='" . $linkUbah . "'>Edit</a></td>";
+                . "<button type='submit' class='btn btn-sm btn-danger'>Hapus</button></form> "
+                . "<a class='btn btn-sm btn-warning' href='" . $linkUbah . "'>Edit</a></td>";
         }
         echo "</tr>";
     }

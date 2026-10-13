@@ -76,8 +76,6 @@ if ($aksi == 'cetak') {
 </head>
 <body>
 
-    <p><a href="dashboard.php">&larr; Kembali ke Dashboard</a></p>
-
     <h1>Laporan</h1>
 
     <p>

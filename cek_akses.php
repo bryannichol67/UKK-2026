@@ -53,3 +53,6 @@ function cek_role($role_diizinkan) {
         exit;
     }
 }
+
+// Pasang sidebar menu di semua halaman (lihat layout.php)
+require_once __DIR__ . '/layout.php';
