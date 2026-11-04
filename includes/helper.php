@@ -11,6 +11,14 @@ if (!defined('TAHUN_LAHIR_MIN')) {
     define('TAHUN_LAHIR_MIN', 2000);
 }
 
+// Panjang maksimal NIS dan NISN (digit angka)
+if (!defined('PANJANG_NIS')) {
+    define('PANJANG_NIS', 15);
+}
+if (!defined('PANJANG_NISN')) {
+    define('PANJANG_NISN', 10);
+}
+
 /* ------------------------------------------------------------------
    1. BADGE STATUS (satu tempat supaya warnanya selalu konsisten)
       Aktif = hijau, Tidak Aktif = abu-abu.
@@ -118,8 +126,22 @@ function validasi_siswa($koneksi, array $v, $id = 0)
 {
     $galat = [];
 
-    if ($v['nis'] === '')  { $galat['nis']  = 'NIS wajib diisi.'; }
-    if ($v['nisn'] === '') { $galat['nisn'] = 'NISN wajib diisi.'; }
+    // NIS maksimal 15 digit, NISN maksimal 10 digit, keduanya hanya angka
+    if ($v['nis'] === '') {
+        $galat['nis'] = 'NIS wajib diisi.';
+    } elseif (!ctype_digit($v['nis'])) {
+        $galat['nis'] = 'NIS hanya boleh berisi angka.';
+    } elseif (strlen($v['nis']) > PANJANG_NIS) {
+        $galat['nis'] = 'NIS maksimal ' . PANJANG_NIS . ' digit.';
+    }
+
+    if ($v['nisn'] === '') {
+        $galat['nisn'] = 'NISN wajib diisi.';
+    } elseif (!ctype_digit($v['nisn'])) {
+        $galat['nisn'] = 'NISN hanya boleh berisi angka.';
+    } elseif (strlen($v['nisn']) > PANJANG_NISN) {
+        $galat['nisn'] = 'NISN maksimal ' . PANJANG_NISN . ' digit.';
+    }
     if ($v['nama'] === '') { $galat['nama'] = 'Nama wajib diisi.'; }
     if (!in_array($v['jenis_kelamin'], ['L', 'P'], true)) {
         $galat['jenis_kelamin'] = 'Pilih jenis kelamin.';
@@ -199,10 +221,10 @@ function pesan_invalid(array $galat, $kolom)
    ------------------------------------------------------------------ */
 
 // Pilihan Aktif / Tidak Aktif di form (sama di semua halaman tambah & edit)
-function html_status_select($nilai, $nama = 'status_aktif')
+function html_status_select($nilai, $nama = 'status_aktif', $invalid = false)
 {
     $n = ((string) $nilai === '0') ? '0' : '1';
-    return '<select name="' . $nama . '" id="' . $nama . '" class="form-select">'
+    return '<select name="' . $nama . '" id="' . $nama . '" class="form-select' . ($invalid ? ' is-invalid' : '') . '">'
          . '<option value="1"' . ($n === '1' ? ' selected' : '') . '>Aktif</option>'
          . '<option value="0"' . ($n === '0' ? ' selected' : '') . '>Tidak Aktif</option>'
          . '</select>';
@@ -247,4 +269,109 @@ function wajib_admin()
         echo "Akses ditolak!";
         exit;
     }
+}
+
+/* ------------------------------------------------------------------
+   5. KELAS: tingkat & jurusan dipilih lewat dropdown
+   ------------------------------------------------------------------ */
+function daftar_tingkat() { return ['X', 'XI', 'XII']; }
+function daftar_jurusan() { return ['RPL', 'TKJ', 'TKR', 'TSM', 'BD']; }
+
+// Isi <option> dropdown. Nilai lama yang tidak ada di daftar tetap ditampilkan
+// supaya data lama tidak hilang saat diedit.
+function html_opsi(array $daftar, $nilai)
+{
+    $nilai = (string) $nilai;
+    if ($nilai !== '' && !in_array($nilai, $daftar, true)) { $daftar[] = $nilai; }
+
+    $html = '';
+    foreach ($daftar as $d) {
+        $html .= '<option value="' . htmlspecialchars($d) . '"' . ($d === $nilai ? ' selected' : '') . '>'
+               . htmlspecialchars($d) . '</option>';
+    }
+    return $html;
+}
+
+// $asli = data kelas sebelum diedit (nilai lamanya boleh tetap dipakai)
+function validasi_kelas(array $v, array $asli = [])
+{
+    $galat = [];
+
+    if ($v['nama'] === '') { $galat['nama'] = 'Nama kelas wajib diisi.'; }
+
+    foreach (['tingkat' => 'Tingkat', 'jurusan' => 'Jurusan'] as $kolom => $label) {
+        $daftar = ($kolom === 'tingkat') ? daftar_tingkat() : daftar_jurusan();
+        if (!empty($asli[$kolom])) { $daftar[] = $asli[$kolom]; }
+
+        if ($v[$kolom] === '') {
+            $galat[$kolom] = $label . ' wajib dipilih.';
+        } elseif (!in_array($v[$kolom], $daftar, true)) {
+            $galat[$kolom] = $label . ' tidak valid, pilih dari daftar.';
+        }
+    }
+    return $galat;
+}
+
+/* ------------------------------------------------------------------
+   6. TAHUN AJARAN: hanya boleh ada satu yang aktif
+   ------------------------------------------------------------------ */
+// Tahun ajaran LAIN yang sedang aktif ($id = tahun yang sedang diedit, 0 jika baru)
+function tahun_aktif_lain($koneksi, $id = 0)
+{
+    return ambil_satu($koneksi,
+        "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 AND id <> ? ORDER BY id LIMIT 1",
+        'i', (int) $id);
+}
+
+function pesan_tahun_aktif_ganda(array $aktif)
+{
+    return 'Sudah ada tahun ajaran aktif (' . $aktif['nama'] . '). '
+         . 'Nonaktifkan dulu tahun ajaran tersebut, atau ubah status ini menjadi Tidak Aktif.';
+}
+
+// Apakah $id adalah tahun ajaran yang berstatus aktif?
+function tahun_ajaran_aktif($koneksi, $id)
+{
+    return (bool) ambil_satu($koneksi,
+        "SELECT id FROM t_tahun_ajaran WHERE id = ? AND status_aktif = 1", 'i', (int) $id);
+}
+
+/* ------------------------------------------------------------------
+   7. WALI KELAS: tahun ajaran harus aktif, kelas dan guru belum
+      punya / jadi wali kelas pada tahun ajaran tersebut
+   ------------------------------------------------------------------ */
+function validasi_wali_kelas_unik($koneksi, array $v, $id = 0)
+{
+    $galat = [];
+
+    if (!tahun_ajaran_aktif($koneksi, $v['tahun_ajaran_id'])) {
+        $galat['tahun_ajaran_id'] = 'Pilih tahun ajaran yang berstatus aktif.';
+        return $galat;
+    }
+
+    // Data berstatus Tidak Aktif tidak menghalangi kelas / guru lain
+    if ((int) $v['status_aktif'] !== 1) { return $galat; }
+
+    $kelas_ada = ambil_satu($koneksi,
+        "SELECT id FROM t_wali_kelas WHERE status_aktif = 1 AND tahun_ajaran_id = ? AND kelas_id = ? AND id <> ? LIMIT 1",
+        'iii', (int) $v['tahun_ajaran_id'], (int) $v['kelas_id'], (int) $id);
+    if ($kelas_ada) { $galat['kelas_id'] = 'Kelas ini sudah memiliki wali kelas.'; }
+
+    $guru_ada = ambil_satu($koneksi,
+        "SELECT id FROM t_wali_kelas WHERE status_aktif = 1 AND tahun_ajaran_id = ? AND guru_id = ? AND id <> ? LIMIT 1",
+        'iii', (int) $v['tahun_ajaran_id'], (int) $v['guru_id'], (int) $id);
+    if ($guru_ada) { $galat['guru_id'] = 'Guru ini sudah menjadi wali kelas.'; }
+
+    return $galat;
+}
+
+/* ------------------------------------------------------------------
+   8. PENEMPATAN SISWA: satu siswa hanya satu kelas per tahun ajaran
+   ------------------------------------------------------------------ */
+// $id = id penempatan yang sedang diedit (0 jika baru)
+function siswa_sudah_ditempatkan($koneksi, $siswa_id, $tahun_id, $id = 0)
+{
+    return (bool) ambil_satu($koneksi,
+        "SELECT id FROM t_kelas_siswa WHERE status_aktif = 1 AND siswa_id = ? AND tahun_ajaran_id = ? AND id <> ? LIMIT 1",
+        'iii', (int) $siswa_id, (int) $tahun_id, (int) $id);
 }

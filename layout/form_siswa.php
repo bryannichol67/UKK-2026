@@ -16,13 +16,15 @@ $tgl_max = date('Y-m-d');
         <div class="col-md-6 mb-3">
             <label for="nis" class="form-label">NIS</label>
             <input type="text" name="nis" id="nis" class="form-control<?= kelas_invalid($galat, 'nis'); ?>"
-                   value="<?= htmlspecialchars((string) $v['nis']); ?>" required>
+                   value="<?= htmlspecialchars((string) $v['nis']); ?>"
+                   maxlength="<?= PANJANG_NIS; ?>" inputmode="numeric" placeholder="Maksimal <?= PANJANG_NIS; ?> digit angka" required>
             <?= pesan_invalid($galat, 'nis'); ?>
         </div>
         <div class="col-md-6 mb-3">
             <label for="nisn" class="form-label">NISN</label>
             <input type="text" name="nisn" id="nisn" class="form-control<?= kelas_invalid($galat, 'nisn'); ?>"
-                   value="<?= htmlspecialchars((string) $v['nisn']); ?>" required>
+                   value="<?= htmlspecialchars((string) $v['nisn']); ?>"
+                   maxlength="<?= PANJANG_NISN; ?>" inputmode="numeric" placeholder="Maksimal <?= PANJANG_NISN; ?> digit angka" required>
             <?= pesan_invalid($galat, 'nisn'); ?>
         </div>
     </div>
@@ -108,5 +110,12 @@ $tgl_max = date('Y-m-d');
     }
     nis.addEventListener('input', cekSama);
     nisn.addEventListener('input', cekSama);
+
+    // NIS dan NISN hanya boleh angka
+    [nis, nisn].forEach(function (el) {
+        el.addEventListener('input', function () {
+            el.value = el.value.replace(/\D/g, '');
+        });
+    });
 })();
 </script>

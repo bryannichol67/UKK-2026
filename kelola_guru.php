@@ -21,11 +21,11 @@ $no = 1;
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+            rel="stylesheet">
 
     <!-- DataTables Bootstrap 5 -->
     <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
-          rel="stylesheet">
+            rel="stylesheet">
 
     <!-- PENGATURAN LEBAR TABEL -->
     <style>
@@ -116,7 +116,7 @@ $no = 1;
 
                     <div class="table-responsive">
                         <table id="tabelGuru"
-                               class="table table-striped table-bordered table-hover align-middle w-100">
+                                class="table table-striped table-bordered table-hover align-middle w-100">
 
                             <thead class="table-dark">
                                 <tr>
@@ -166,13 +166,13 @@ $no = 1;
                                         <div class="d-flex gap-2">
 
                                             <a href="edit_guru.php?id=<?= urlencode($row['id']) ?>"
-                                               class="btn btn-warning btn-sm">
+                                                class="btn btn-warning btn-sm">
                                                 Edit
                                             </a>
 
                                             <a href="hapus_guru.php?id=<?= urlencode($row['id']) ?>"
-                                               class="btn btn-danger btn-sm"
-                                               onclick="return confirm('Yakin ingin menghapus data guru ini?');">
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin ingin menghapus data guru ini?');">
                                                 Hapus
                                             </a>
 

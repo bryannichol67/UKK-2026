@@ -29,7 +29,8 @@ $label_tombol = $label_tombol ?? 'Simpan';
     </div>
     <div class="mb-3">
         <label for="status_aktif" class="form-label">Status</label>
-        <?= html_status_select($v['status_aktif']); ?>
+        <?= html_status_select($v['status_aktif'], 'status_aktif', isset($galat['status_aktif'])); ?>
+        <?= pesan_invalid($galat, 'status_aktif'); ?>
     </div>
 
     <div class="td-actions">

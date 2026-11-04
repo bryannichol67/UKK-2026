@@ -16,9 +16,7 @@ if (isset($_POST['simpan'])) {
         'jurusan'      => trim($_POST['jurusan'] ?? ''),
         'status_aktif' => (string) ($_POST['status_aktif'] ?? '1') === '0' ? 0 : 1,
     ];
-    if ($v['nama'] === '')    { $galat['nama']    = 'Nama kelas wajib diisi.'; }
-    if ($v['tingkat'] === '') { $galat['tingkat'] = 'Tingkat wajib diisi.'; }
-    if ($v['jurusan'] === '') { $galat['jurusan'] = 'Jurusan wajib diisi.'; }
+    $galat = validasi_kelas($v);
 
     if (empty($galat)) {
         try {

@@ -33,6 +33,12 @@ if (isset($_POST['simpan'])) {
     if ($v['tanggal_mulai'] === '')   { $galat['tanggal_mulai']   = 'Tanggal mulai wajib diisi.'; }
     if ($v['tanggal_selesai'] === '') { $galat['tanggal_selesai'] = 'Tanggal selesai wajib diisi.'; }
 
+    // Hanya boleh ada satu tahun ajaran aktif
+    if ($v['status_aktif'] === 1) {
+        $aktif = tahun_aktif_lain($koneksi, $id);
+        if ($aktif) { $galat['status_aktif'] = pesan_tahun_aktif_ganda($aktif); }
+    }
+
     if (empty($galat)) {
         try {
             $stmt = mysqli_prepare($koneksi, "UPDATE t_tahun_ajaran SET nama = ?, tanggal_mulai = ?, tanggal_selesai = ?, status_aktif = ?, updated_at = NOW() WHERE id = ?");

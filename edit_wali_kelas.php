@@ -39,6 +39,11 @@ if (isset($_POST['simpan'])) {
     if ($v['tanggal_mulai'] === '')    { $galat['tanggal_mulai']   = 'Tanggal mulai wajib diisi.'; }
     if ($v['tanggal_selesai'] === '')  { $galat['tanggal_selesai'] = 'Tanggal selesai wajib diisi.'; }
 
+    // Tahun ajaran harus aktif; kelas dan guru belum menjadi wali kelas
+    if (empty($galat)) {
+        $galat = validasi_wali_kelas_unik($koneksi, $v, $id);
+    }
+
     if (empty($galat)) {
         try {
             $stmt = mysqli_prepare($koneksi, "UPDATE t_wali_kelas SET
@@ -58,10 +63,19 @@ if (isset($_POST['simpan'])) {
     }
 }
 
-// Pilihan dropdown (data aktif + pilihan yang sedang tersimpan, supaya tidak hilang)
-$daftar_tahun = ambil_semua($koneksi, "SELECT * FROM t_tahun_ajaran WHERE status_aktif = 1 OR id = ? ORDER BY id DESC", 'i', (int) $wali['tahun_ajaran_id']);
-$daftar_kelas = ambil_semua($koneksi, "SELECT * FROM t_kelas WHERE status_aktif = 1 OR id = ? ORDER BY nama ASC", 'i', (int) $wali['kelas_id']);
-$daftar_guru  = ambil_semua($koneksi, "SELECT * FROM t_guru WHERE status_aktif = 1 OR id = ? ORDER BY nama ASC", 'i', (int) $wali['guru_id']);
+// Pilihan dropdown: tahun ajaran hanya yang aktif. Kelas dan guru yang sudah menjadi
+// wali kelas (selain data yang sedang diedit ini) tidak ditampilkan.
+$daftar_tahun = ambil_semua($koneksi, "SELECT * FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC");
+$daftar_kelas = ambil_semua($koneksi, "SELECT * FROM t_kelas WHERE (status_aktif = 1 OR id = ?)
+    AND id NOT IN (SELECT kelas_id FROM t_wali_kelas
+                   WHERE status_aktif = 1 AND kelas_id IS NOT NULL AND id <> ?
+                   AND tahun_ajaran_id IN (SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1))
+    ORDER BY nama ASC", 'ii', (int) $wali['kelas_id'], $id);
+$daftar_guru  = ambil_semua($koneksi, "SELECT * FROM t_guru WHERE (status_aktif = 1 OR id = ?)
+    AND id NOT IN (SELECT guru_id FROM t_wali_kelas
+                   WHERE status_aktif = 1 AND guru_id IS NOT NULL AND id <> ?
+                   AND tahun_ajaran_id IN (SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1))
+    ORDER BY nama ASC", 'ii', (int) $wali['guru_id'], $id);
 
 $judul        = 'Edit Wali Kelas';
 $menu_aktif   = 'kelola_wali_kelas.php';

@@ -2,6 +2,7 @@
 // tambah_penempatan_siswa.php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
+include_once 'includes/helper.php';
 cek_role(['admin']);
 
 // Nilai awal form
@@ -26,6 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($v['tanggal_selesai'] < $v['tanggal_mulai']) {
         $error = 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai.';
+    } elseif (!tahun_ajaran_aktif($koneksi, $v['tahun_ajaran_id'])) {
+        $error = 'Pilih tahun ajaran yang berstatus aktif.';
+    } elseif ($v['status_aktif'] == 1 && siswa_sudah_ditempatkan($koneksi, $v['siswa_id'], $v['tahun_ajaran_id'])) {
+        $error = 'Siswa ini sudah ditempatkan ke sebuah kelas pada tahun ajaran tersebut.';
     } else {
         $stmt = mysqli_prepare($koneksi,
             "INSERT INTO t_kelas_siswa
@@ -45,7 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Pilihan dropdown (hanya data aktif)
-$siswa = mysqli_query($koneksi, "SELECT id, nis, nama FROM t_siswa WHERE status_aktif = 1 ORDER BY nama ASC");
+// Siswa yang sudah ditempatkan pada tahun ajaran aktif tidak ditampilkan lagi
+$siswa = mysqli_query($koneksi, "SELECT id, nis, nama FROM t_siswa WHERE status_aktif = 1
+    AND id NOT IN (SELECT siswa_id FROM t_kelas_siswa
+                   WHERE status_aktif = 1 AND siswa_id IS NOT NULL
+                   AND tahun_ajaran_id IN (SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1))
+    ORDER BY nama ASC");
 $tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC");
 $kelas = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas WHERE status_aktif = 1 ORDER BY nama ASC");
 

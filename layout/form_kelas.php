@@ -16,14 +16,18 @@ $label_tombol = $label_tombol ?? 'Simpan';
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="tingkat" class="form-label">Tingkat</label>
-            <input type="text" name="tingkat" id="tingkat" class="form-control<?= kelas_invalid($galat, 'tingkat'); ?>"
-                   value="<?= htmlspecialchars((string) $v['tingkat']); ?>" required>
+            <select name="tingkat" id="tingkat" class="form-select<?= kelas_invalid($galat, 'tingkat'); ?>" required>
+                <option value="">-- Pilih Tingkat --</option>
+                <?= html_opsi(daftar_tingkat(), $v['tingkat']); ?>
+            </select>
             <?= pesan_invalid($galat, 'tingkat'); ?>
         </div>
         <div class="col-md-6 mb-3">
             <label for="jurusan" class="form-label">Jurusan</label>
-            <input type="text" name="jurusan" id="jurusan" class="form-control<?= kelas_invalid($galat, 'jurusan'); ?>"
-                   value="<?= htmlspecialchars((string) $v['jurusan']); ?>" required>
+            <select name="jurusan" id="jurusan" class="form-select<?= kelas_invalid($galat, 'jurusan'); ?>" required>
+                <option value="">-- Pilih Jurusan --</option>
+                <?= html_opsi(daftar_jurusan(), $v['jurusan']); ?>
+            </select>
             <?= pesan_invalid($galat, 'jurusan'); ?>
         </div>
     </div>

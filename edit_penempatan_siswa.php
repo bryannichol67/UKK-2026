@@ -2,6 +2,7 @@
 // edit_penempatan_siswa.php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
+include_once 'includes/helper.php';
 cek_role(['admin']);
 
 $id = (int) ($_GET['id'] ?? 0);
@@ -39,6 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($v['tanggal_selesai'] < $v['tanggal_mulai']) {
         $error = 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai.';
+    } elseif (!tahun_ajaran_aktif($koneksi, $v['tahun_ajaran_id'])) {
+        $error = 'Pilih tahun ajaran yang berstatus aktif.';
+    } elseif ($v['status_aktif'] == 1 && siswa_sudah_ditempatkan($koneksi, $v['siswa_id'], $v['tahun_ajaran_id'], $id)) {
+        $error = 'Siswa ini sudah ditempatkan ke sebuah kelas pada tahun ajaran tersebut.';
     } else {
         $stmt = mysqli_prepare($koneksi,
             "UPDATE t_kelas_siswa SET
@@ -59,9 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Pilihan dropdown (semua data, supaya pilihan lama tetap muncul)
-$siswa = mysqli_query($koneksi, "SELECT id, nis, nama FROM t_siswa ORDER BY nama ASC");
-$tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran ORDER BY id DESC");
+// Pilihan dropdown: tahun ajaran hanya yang aktif. Siswa yang sudah ditempatkan
+// pada tahun ajaran aktif (selain data yang sedang diedit ini) tidak ditampilkan.
+$siswa = mysqli_query($koneksi, "SELECT id, nis, nama FROM t_siswa
+    WHERE (status_aktif = 1 OR id = " . (int) $row['siswa_id'] . ")
+    AND id NOT IN (SELECT siswa_id FROM t_kelas_siswa
+                   WHERE status_aktif = 1 AND siswa_id IS NOT NULL AND id <> " . (int) $id . "
+                   AND tahun_ajaran_id IN (SELECT id FROM t_tahun_ajaran WHERE status_aktif = 1))
+    ORDER BY nama ASC");
+$tahun = mysqli_query($koneksi, "SELECT id, nama FROM t_tahun_ajaran WHERE status_aktif = 1 ORDER BY id DESC");
+// Pilihan kelas: semua data, supaya pilihan lama tetap muncul
 $kelas = mysqli_query($koneksi, "SELECT id, nama, tingkat, jurusan FROM t_kelas ORDER BY nama ASC");
 
 $label_tombol = 'Simpan Penempatan';
