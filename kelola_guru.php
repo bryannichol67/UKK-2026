@@ -1,3 +1,4 @@
+
 <?php
 // kelola_guru.php
 include 'includes/cek_session.php';
@@ -6,6 +7,8 @@ include_once 'includes/helper.php';
 
 $sql = "SELECT * FROM t_guru ORDER BY nama ASC";
 $hasil = mysqli_query($koneksi, $sql);
+
+$no = 1;
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +26,66 @@ $hasil = mysqli_query($koneksi, $sql);
     <!-- DataTables Bootstrap 5 -->
     <link href="https://cdn.datatables.net/2.3.4/css/dataTables.bootstrap5.min.css"
           rel="stylesheet">
+
+    <!-- PENGATURAN LEBAR TABEL -->
+    <style>
+        #tabelGuru {
+            width: 100% !important;
+            table-layout: fixed !important;
+        }
+
+        /* KOLOM NO */
+        #tabelGuru th:nth-child(1),
+        #tabelGuru td:nth-child(1) {
+            width: 35px !important;
+            min-width: 35px !important;
+            max-width: 35px !important;
+            text-align: center;
+        }
+
+        /* KOLOM NIP */
+        #tabelGuru th:nth-child(2),
+        #tabelGuru td:nth-child(2) {
+            width: 110px !important;
+        }
+
+        /* KOLOM NAMA GURU */
+        #tabelGuru th:nth-child(3),
+        #tabelGuru td:nth-child(3) {
+            width: 150px !important;
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+        }
+
+        /* KOLOM EMAIL */
+        #tabelGuru th:nth-child(4),
+        #tabelGuru td:nth-child(4) {
+            width: 170px !important;
+            overflow-wrap: anywhere;
+        }
+
+        /* KOLOM STATUS AKTIF */
+        #tabelGuru th:nth-child(5),
+        #tabelGuru td:nth-child(5) {
+            width: 90px !important;
+        }
+
+        /* KOLOM DIBUAT DAN DIUBAH */
+        #tabelGuru th:nth-child(6),
+        #tabelGuru td:nth-child(6),
+        #tabelGuru th:nth-child(7),
+        #tabelGuru td:nth-child(7) {
+            width: 110px !important;
+            font-size: 12px;
+        }
+
+        /* KOLOM AKSI */
+        #tabelGuru th:nth-child(8),
+        #tabelGuru td:nth-child(8) {
+            width: 130px !important;
+            white-space: nowrap;
+        }
+    </style>
 </head>
 
 <body>
@@ -70,7 +133,7 @@ $hasil = mysqli_query($koneksi, $sql);
 
                             <tbody>
 
-                            <?php while ($row = mysqli_fetch_assoc($hasil)) {   ?>
+                            <?php while ($row = mysqli_fetch_assoc($hasil)) { ?>
 
                                 <tr>
                                     <td><?= $no++; ?></td>
@@ -142,15 +205,60 @@ $hasil = mysqli_query($koneksi, $sql);
 <!-- Inisialisasi DataTables -->
 <script>
 $(document).ready(function () {
+
     $('#tabelGuru').DataTable({
-        // Nomor urut mengikuti urutan & halaman yang sedang tampil
+
+        // Nonaktifkan pengaturan lebar otomatis
+        autoWidth: false,
+
+        // Pengaturan lebar masing-masing kolom
+        columnDefs: [
+            {
+                targets: 0,
+                width: '35px',
+                orderable: false,
+                searchable: false
+            },
+            {
+                targets: 1,
+                width: '110px'
+            },
+            {
+                targets: 2,
+                width: '150px'
+            },
+            {
+                targets: 3,
+                width: '170px'
+            },
+            {
+                targets: 4,
+                width: '90px'
+            },
+            {
+                targets: [5, 6],
+                width: '110px'
+            },
+            {
+                targets: 7,
+                width: '130px',
+                orderable: false,
+                searchable: false
+            }
+        ],
+
+        // Nomor urut mengikuti halaman yang sedang tampil
         drawCallback: function () {
+
             var api = this.api();
             var mulai = api.page.info().start;
+
             api.column(0, { page: 'current' }).nodes().each(function (sel, i) {
                 sel.innerHTML = mulai + i + 1;
             });
+
         },
+
         language: {
             search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
@@ -159,6 +267,7 @@ $(document).ready(function () {
             infoFiltered: "(difilter dari _MAX_ total data)",
             zeroRecords: "Data guru tidak ditemukan",
             emptyTable: "Belum ada data guru",
+
             paginate: {
                 first: "Pertama",
                 last: "Terakhir",
@@ -169,16 +278,10 @@ $(document).ready(function () {
 
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
-        order: [[1, 'asc']],
-        columnDefs: [
-            { targets: 0, orderable: false, searchable: false },
-            {
-                targets: 7,
-                orderable: false,
-                searchable: false
-            }
-        ]
+        order: [[1, 'asc']]
+
     });
+
 });
 </script>
 
