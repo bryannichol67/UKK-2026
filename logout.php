@@ -1,6 +1,14 @@
 <?php
+
 session_start();
-session_unset();
+
+// Hapus semua session
+$_SESSION = array();
+
 session_destroy();
+
+// Kembali ke login
 header("Location: login.php");
 exit;
+
+?>

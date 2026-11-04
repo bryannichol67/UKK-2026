@@ -1,149 +1,76 @@
-
-
 <?php
-include "cek_akses.php";
-include "config/koneksi.php";
+// Memeriksa session login
+include "includes/cek_session.php";
 
-// Data kartu ringkasan
-$jml_siswa       = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM t_siswa"))[0];
-$jml_catatan     = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM t_pelanggaran_siswa"))[0];
-$jml_pelanggaran = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM t_pelanggaran"))[0];
-
-// Catatan bulan ini (maksimal 10 terbaru)
-$catatan = mysqli_query($koneksi, "SELECT nama_siswa, nama_kelas, nama_pelanggaran
-    FROM t_pelanggaran_siswa
-    WHERE MONTH(tanggal) = MONTH(CURDATE()) AND YEAR(tanggal) = YEAR(CURDATE())
-    ORDER BY tanggal DESC LIMIT 10");
+// Mengambil data pengguna
+$nama  = $_SESSION['nama'] ?? $_SESSION['nama_lengkap'] ?? 'Pengguna';
+$email = $_SESSION['email'] ?? '-';
+$role  = $_SESSION['role'] ?? '-';
 ?>
-
-
-
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 
 <body>
 
 <div class="container-fluid">
     <div class="row">
+
+        <?php include "layout/sidebar.php"; ?>
+
         <!-- KONTEN -->
-        <main class="col-12 p-4">
-            <h2>Dashboard</h2>
-            <p>
-                Selamat datang di halaman dashboard.
-            </p>
+        <main class="col-md-9 col-lg-10 p-4">
+            <h2 class="mb-3">Dashboard</h2>
+
+            <!-- Info pengguna -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <p class="mb-1">Selamat datang, <b><?= htmlspecialchars($nama); ?></b></p>
+                    <p class="mb-1 text-muted">Email: <?= htmlspecialchars($email); ?></p>
+                    <p class="mb-0 text-muted">Role: <span class="badge bg-primary"><?= htmlspecialchars($role); ?></span></p>
+                </div>
+            </div>
+
             <div class="row">
                 <!-- CARD DATA SISWA -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card shadow-sm border-start border-primary border-4">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                Data Siswa
-                            </h5>
-                            <h2>
-                                120
-                            </h2>
+                            <h6 class="text-muted">Data Siswa</h6>
+                            <h2 class="mb-0">120</h2>
                         </div>
                     </div>
                 </div>
+
                 <!-- CARD DATA GURU -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card shadow-sm border-start border-success border-4">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                Data Guru
-                            </h5>
-                            <h2>
-                                25
-                            </h2>
+                            <h6 class="text-muted">Data Guru</h6>
+                            <h2 class="mb-0">25</h2>
                         </div>
                     </div>
                 </div>
+
                 <!-- CARD KELAS -->
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
+                <div class="col-12 col-md-4 mb-3">
+                    <div class="card shadow-sm border-start border-warning border-4">
                         <div class="card-body">
-                            <h5 class="card-title">
-                                Kelas
-                            </h5>
-                            <h2>
-                             12
-                          </h2>
+                            <h6 class="text-muted">Kelas</h6>
+                            <h2 class="mb-0">12</h2>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
+
     </div>
 </div>
-    <!-- <h2>Dashboard</h2>
-    <p>
-        Selamat datang,
-        <?php echo $_SESSION['nama_user']; ?>
-    </p>
-    <p>
-        Anda berhasil login.
-    </p>
-    <a href="logout.php">Logout</a>
-</body>
-</html>
- -->
-
-<!-- <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css">
-    <title>Dashboard - Sistem Pelanggaran Siswa</title>
-</head>
-<body>
-
-    <h1>Dashboard</h1>
-    <p>Selamat datang, <b><?php echo htmlspecialchars($_SESSION['name']); ?></b> (<?php echo htmlspecialchars($_SESSION['role']); ?><?php echo !empty($_SESSION['wali_kelas']) ? ', wali kelas' : ''; ?>)</p>
-
-    <div class="kartu-wrap">
-        <div class="kartu kartu-siswa"><span>Siswa</span><b><?php echo number_format($jml_siswa, 0, ',', '.'); ?></b></div>
-        <div class="kartu kartu-catatan"><span>Catatan</span><b><?php echo number_format($jml_catatan, 0, ',', '.'); ?></b></div>
-        <div class="kartu kartu-pelanggaran"><span>Pelanggaran</span><b><?php echo number_format($jml_pelanggaran, 0, ',', '.'); ?></b></div>
-    </div>
-
-    <h2>Informasi catatan bulan ini</h2>
-    <div class="tabel-wrap">
-        <table>
-            <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>Catatan</th>
-            </tr>
-            <?php $no = 1; while ($row = mysqli_fetch_assoc($catatan)) { ?>
-                <tr>
-                    <td><?php echo $no++; ?></td>
-                    <td><?php echo htmlspecialchars($row['nama_siswa']); ?></td>
-                    <td><?php echo htmlspecialchars($row['nama_kelas']); ?></td>
-                    <td><?php echo htmlspecialchars($row['nama_pelanggaran']); ?></td>
-                </tr>
-            <?php } ?>
-            <?php if ($no === 1) { ?>
-                <tr><td colspan="4">Belum ada catatan bulan ini.</td></tr>
-            <?php } ?>
-        </table>
-    </div>
-
-    <ul>
-        <li><a href="dashboard.php">Dashboard</a></li>
-
-        <?php foreach ($daftar_menu as $menu) { ?>
-            <?php if (punya_role($menu[2])) { ?>
-                <li><a href="<?php echo $menu[1]; ?>"><?php echo $menu[0]; ?></a></li>
-            <?php } ?>
-        <?php } ?>
-
-        <li><a href="logout.php">Logout</a></li>
-    </ul> -->
 
 </body>
 </html>

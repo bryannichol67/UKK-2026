@@ -1,0 +1,160 @@
+/* ============================================================
+   assets/css/tambah_data.css
+   Tampilan semua halaman "Tambah Data" (tambah_data_*.php).
+   Dipasang oleh layout/tambah_atas.php, setelah Bootstrap 5.
+   Warna mengikuti sidebar (indigo #4f46e5, abu-abu slate).
+   Semua aturan berada di dalam .td-card supaya tidak
+   memengaruhi halaman lain.
+   ============================================================ */
+
+/* ---------- Judul halaman ---------- */
+.td-head { margin-bottom: 1.25rem; }
+.td-head h1 { margin: 0 0 .25rem; }
+.td-sub { margin: 0; color: #64748b; font-size: .95rem; }
+
+/* ---------- Kartu form ---------- */
+.td-card {
+    max-width: 760px;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, .06), 0 4px 14px rgba(15, 23, 42, .05);
+}
+
+/* Judul kecil "Tambah data" dari crud.php */
+.td-card > h3 {
+    margin: 0 0 1.25rem;
+    padding-bottom: .9rem;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 1.05rem;
+    color: #0f172a;
+}
+
+/* Kartu lebar untuk form 2 kolom (mis. Catat Pelanggaran) */
+.td-card.td-lebar { max-width: 980px; }
+
+/* Pesan error dari proses simpan */
+.td-card > .alert { margin-bottom: 1.25rem; }
+
+/* crud.php memberi style="max-width:640px" pada form; lebarnya ikut kartu */
+.td-card form { max-width: none !important; }
+
+/* ---------- Tabel isian -> label di atas, kolom isian di bawahnya ---------- */
+.td-card table,
+.td-card tbody,
+.td-card tr,
+.td-card td { display: block; width: 100%; }
+
+.td-card table.table {
+    margin: 0 0 1.5rem;
+    padding-bottom: .4rem;
+    background: transparent;
+    border-bottom: 1px solid #e2e8f0;
+}
+.td-card .table > :not(caption) > * > * {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+.td-card tr { margin-bottom: 1.1rem; }
+.td-card td:first-child {
+    margin-bottom: .35rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* ---------- Kolom isian ---------- */
+.td-card .form-control,
+.td-card .form-select {
+    padding: .65rem .9rem;
+    font-size: .95rem;
+    color: #0f172a;
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: .65rem;
+    transition: border-color .15s, box-shadow .15s, background-color .15s;
+}
+.td-card .form-control:hover,
+.td-card .form-select:hover { border-color: #94a3b8; }
+.td-card .form-control:focus,
+.td-card .form-select:focus {
+    background-color: #fff;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 .25rem rgba(99, 102, 241, .18);
+    outline: 0;
+}
+.td-card .form-control::placeholder { color: #94a3b8; }
+
+/* <select class="form-select">: sisakan ruang untuk panah bawaan Bootstrap */
+.td-card .form-select { padding-right: 2.5rem; }
+
+/* Label untuk form Bootstrap biasa (<label class="form-label">) */
+.td-card .form-label {
+    margin-bottom: .35rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+/* Baris tombol di bawah form */
+.td-actions {
+    display: flex;
+    gap: .5rem;
+    margin-top: .5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #e2e8f0;
+}
+.td-card .td-actions .btn {
+    padding: .6rem 1.5rem;
+    border-radius: .65rem;
+    font-weight: 500;
+}
+/* tombol langsung di dalam form (form_penempatan / form_catat_pelanggaran) */
+.td-card form > .btn { margin-top: .5rem; }
+
+/* crud.php memakai class form-control pada <select>; beri panah yang rapi */
+.td-card select.form-control {
+    padding-right: 2.5rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right .9rem center;
+    background-size: 14px;
+}
+.td-card textarea.form-control { min-height: 110px; resize: vertical; }
+
+/* ---------- Tombol Simpan / Batal ---------- */
+.td-card form > .btn {
+    padding: .6rem 1.5rem;
+    border-radius: .65rem;
+    font-weight: 500;
+}
+.td-card form > .btn + .btn,
+.td-card form > button + a.btn { margin-left: .35rem; }
+
+/* ---------- Layar kecil ---------- */
+@media (max-width: 575.98px) {
+    .td-card { padding: 1.25rem 1.1rem; border-radius: .8rem; }
+    .td-card form > .btn { display: block; width: 100%; margin: 0 0 .5rem; }
+    .td-actions { flex-direction: column; }
+    .td-card .td-actions .btn { width: 100%; }
+    .td-card form > .btn + .btn,
+    .td-card form > button + a.btn { margin-left: 0; }
+}
+
+/* ---------- Isian yang belum benar (validasi form) ---------- */
+.td-card .form-control.is-invalid,
+.td-card .form-select.is-invalid {
+    border-color: #dc3545;
+    background-color: #fff;
+}
+.td-card .form-control.is-invalid:focus,
+.td-card .form-select.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 .25rem rgba(220, 53, 69, .2);
+}
+.td-card .invalid-feedback { font-size: .85rem; }
+.td-card .form-text { color: #64748b; font-size: .8rem; }
