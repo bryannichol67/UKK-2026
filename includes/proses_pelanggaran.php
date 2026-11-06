@@ -2,6 +2,8 @@
 // includes/proses_pelanggaran.php
 // Fungsi bersama untuk tambah & edit catatan pelanggaran.
 
+include_once __DIR__ . '/helper.php';
+
 // Mengambil satu baris data berdasarkan id
 function cari_satu($koneksi, $sql, $id)
 {
@@ -35,6 +37,12 @@ function data_dari_post()
 // Mengembalikan true jika berhasil, atau teks error jika gagal.
 function simpan_pelanggaran($koneksi, $v, $id = 0)
 {
+    // Tanggal harus benar dan minimal tahun 2000
+    $pesan_tgl = validasi_tanggal($v['tanggal'], 'Tanggal');
+    if ($pesan_tgl !== '') {
+        return $pesan_tgl;
+    }
+
     // Nama siswa, kelas, pelanggaran, dan guru ikut disimpan di tabel,
     // jadi diambil dari database berdasarkan id yang dipilih.
     $siswa = cari_satu($koneksi, "SELECT nama FROM t_siswa WHERE id = ?", $v['siswa_id']);

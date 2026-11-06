@@ -36,8 +36,7 @@ $hasil = mysqli_query($koneksi, $sql);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2>Kelola Tahun Ajaran</h2>
-            <p>Selamat datang di halaman Tahun Ajaran.</p>
+            <h1 class="mb-4">Kelola Tahun Ajaran</h1>
 
             <div class="mb-3">
                 <a href="dashboard.php" class="btn btn-secondary">
@@ -45,80 +44,86 @@ $hasil = mysqli_query($koneksi, $sql);
                 </a>
 
                 <a href="tambah_tahun_ajaran.php" class="btn btn-primary">
-                    Tambah Tahun Ajaran
+                    + Tambah Tahun Ajaran
                 </a>
             </div>
 
             <!-- TABEL DATA TAHUN AJARAN -->
-            <div class="table-responsive">
+            <div class="card shadow-sm">
+                <div class="card-body">
 
-                <table id="tabelTahunAjaran"
-                       class="table table-striped table-bordered table-hover">
+                    <div class="table-responsive">
 
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Nama Tahun Ajaran</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status Aktif</th>
-                            <th>Dibuat</th>
-                            <th>Diubah</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                        <table id="tabelTahunAjaran"
+                               class="table table-striped table-bordered table-hover align-middle w-100">
 
-                    <tbody>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Tahun Ajaran</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
+                                    <th>Status Aktif</th>
+                                    <th>Dibuat</th>
+                                    <th>Diubah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
 
-                    <?php $no = 1; while ($row = mysqli_fetch_assoc($hasil)) { ?>
+                            <tbody>
 
-                        <tr>
-                            <td><?= $no++; ?></td>
+                            <?php $no = 1; while ($row = mysqli_fetch_assoc($hasil)) { ?>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['nama']); ?>
-                            </td>
+                                <tr>
+                                    <td><?= $no++; ?></td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['tanggal_mulai'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['nama']); ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['tanggal_selesai'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['tanggal_mulai'] ?? ''); ?>
+                                    </td>
 
-                            <td>
-                                <?= badge_status($row['status_aktif']) ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['tanggal_selesai'] ?? ''); ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['created_at'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?= badge_status($row['status_aktif']) ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['updated_at'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['created_at'] ?? ''); ?>
+                                    </td>
 
-                            <td>
-                                <a href="edit_tahun_ajaran.php?id=<?php echo urlencode($row['id']); ?>"
-                                   class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['updated_at'] ?? ''); ?>
+                                    </td>
 
-                                <a href="hapus_tahun_ajaran.php?id=<?php echo urlencode($row['id']); ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus data tahun ajaran ini?');">
-                                    Hapus
-                                </a>
-                            </td>
-                        </tr>
+                                    <td>
+                                        <a href="edit_tahun_ajaran.php?id=<?php echo urlencode($row['id']); ?>"
+                                           class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
 
-                    <?php } ?>
+                                        <a href="hapus_tahun_ajaran.php?id=<?php echo urlencode($row['id']); ?>"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Yakin ingin menghapus data tahun ajaran ini?');">
+                                            Hapus
+                                        </a>
+                                    </td>
+                                </tr>
 
-                    </tbody>
+                            <?php } ?>
 
-                </table>
+                            </tbody>
 
+                        </table>
+
+                    </div>
+
+                </div>
             </div>
 
         </main>

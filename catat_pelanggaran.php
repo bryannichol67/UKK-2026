@@ -181,6 +181,15 @@ $no = 1;
 <script>
 $(document).ready(function () {
     $('#tabelPelanggaran').DataTable({
+        // Nomor urut mengikuti urutan & halaman yang sedang tampil
+        drawCallback: function () {
+            var api = this.api();
+            var mulai = api.page.info().start;
+            api.column(0, { page: 'current' }).nodes().each(function (sel, i) {
+                sel.innerHTML = mulai + i + 1;
+            });
+        },
+
         language: {
             search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
@@ -199,13 +208,11 @@ $(document).ready(function () {
 
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
-        order: [[0, 'asc']],
+        // Urutan mengikuti data terbaru (sesuai query)
+        order: [],
         columnDefs: [
-            {
-                targets: -1,
-                orderable: false,
-                searchable: false
-            }
+            { targets: 0, orderable: false, searchable: false },
+            { targets: -1, orderable: false, searchable: false }
         ]
     });
 });

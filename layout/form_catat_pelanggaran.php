@@ -71,7 +71,7 @@ $daftar_status = ['belum' => 'Belum Ditindaklanjuti', 'proses' => 'Proses', 'sel
 
         <div class="col-md-6 mb-3">
             <label class="form-label">Tanggal</label>
-            <input type="date" name="tanggal" class="form-control"
+            <input type="date" name="tanggal" class="form-control" min="<?= tanggal_min(); ?>"
                    value="<?= htmlspecialchars($v['tanggal']); ?>" required>
         </div>
 

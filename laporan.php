@@ -52,7 +52,7 @@ $hasil = mysqli_query($koneksi, $sql);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2 class="mb-4">Laporan Pelanggaran Siswa</h2>
+            <h1 class="mb-4">Laporan Pelanggaran Siswa</h1>
 
             <!-- Tombol Navigasi dan Laporan -->
             <div class="mb-3">

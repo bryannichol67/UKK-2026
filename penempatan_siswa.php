@@ -52,19 +52,16 @@ $hasil = mysqli_query($koneksi, $sql);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2 class="mb-2">Penempatan Siswa</h2>
-            <p class="text-muted">
-                Kelola penempatan siswa berdasarkan tahun ajaran dan kelas.
-            </p>
+            <h1 class="mb-4">Penempatan Siswa</h1>
 
-            <p class="d-flex flex-wrap gap-2">
-                <a href="dashboard.php" class="btn btn-secondary btn-sm">
+            <div class="mb-3">
+                <a href="dashboard.php" class="btn btn-secondary">
                     Kembali ke Dashboard
                 </a>
-                <a href="tambah_penempatan_siswa.php" class="btn btn-primary btn-sm">
+                <a href="tambah_penempatan_siswa.php" class="btn btn-primary">
                     + Tambah Penempatan
                 </a>
-            </p>
+            </div>
 
             <!-- Pesan sukses -->
             <?php if (isset($_SESSION['pesan_sukses'])) { ?>
@@ -88,15 +85,12 @@ $hasil = mysqli_query($koneksi, $sql);
 
             <!-- TABEL DATA PENEMPATAN -->
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Data Penempatan Siswa</h5>
-                </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
 
                         <table id="tabelPenempatan"
-                               class="table table-striped table-bordered table-hover align-middle">
+                               class="table table-striped table-bordered table-hover align-middle w-100">
 
                             <thead class="table-dark">
                                 <tr>
@@ -198,6 +192,15 @@ $hasil = mysqli_query($koneksi, $sql);
 <script>
 $(document).ready(function () {
     $('#tabelPenempatan').DataTable({
+        // Nomor urut mengikuti urutan & halaman yang sedang tampil
+        drawCallback: function () {
+            var api = this.api();
+            var mulai = api.page.info().start;
+            api.column(0, { page: 'current' }).nodes().each(function (sel, i) {
+                sel.innerHTML = mulai + i + 1;
+            });
+        },
+
         language: {
             search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
@@ -215,8 +218,12 @@ $(document).ready(function () {
         },
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50, 100],
-        order: [[0, 'asc']],
-        columnDefs: [{ orderable: false, targets: -1 }]
+        // Urutan mengikuti data terbaru (sesuai query)
+        order: [],
+        columnDefs: [
+            { targets: 0, orderable: false, searchable: false },
+            { targets: -1, orderable: false, searchable: false }
+        ]
     });
 });
 </script>

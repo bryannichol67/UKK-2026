@@ -16,13 +16,13 @@ $label_tombol = $label_tombol ?? 'Simpan';
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-            <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control<?= kelas_invalid($galat, 'tanggal_mulai'); ?>"
+            <input type="date" name="tanggal_mulai" id="tanggal_mulai" min="<?= tanggal_min(); ?>" class="form-control<?= kelas_invalid($galat, 'tanggal_mulai'); ?>"
                    value="<?= htmlspecialchars((string) $v['tanggal_mulai']); ?>" required>
             <?= pesan_invalid($galat, 'tanggal_mulai'); ?>
         </div>
         <div class="col-md-6 mb-3">
             <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-            <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control<?= kelas_invalid($galat, 'tanggal_selesai'); ?>"
+            <input type="date" name="tanggal_selesai" id="tanggal_selesai" min="<?= tanggal_min(); ?>" class="form-control<?= kelas_invalid($galat, 'tanggal_selesai'); ?>"
                    value="<?= htmlspecialchars((string) $v['tanggal_selesai']); ?>" required>
             <?= pesan_invalid($galat, 'tanggal_selesai'); ?>
         </div>

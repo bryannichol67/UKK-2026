@@ -183,7 +183,7 @@ $jumlah_siswa = count($data_rekap);
                 <!-- JUDUL HALAMAN -->
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
                     <div>
-                        <h2>Rekap Poin Pelanggaran Siswa</h2>
+                        <h1>Rekap Poin Pelanggaran Siswa</h1>
                         <p class="text-muted mb-0">
                             Ringkasan jumlah pelanggaran dan poin setiap siswa.
                         </p>
@@ -303,15 +303,12 @@ $jumlah_siswa = count($data_rekap);
 
                 <!-- TABEL REKAP -->
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">Data Rekap Poin Siswa</h5>
-                    </div>
 
                     <div class="card-body">
                         <div class="table-responsive">
 
                             <table id="tabelRekap"
-                                   class="table table-striped table-bordered table-hover align-middle">
+                                   class="table table-striped table-bordered table-hover align-middle w-100">
 
                                 <thead class="table-dark">
                                     <tr>
@@ -419,7 +416,7 @@ $(document).ready(function () {
         },
 
         language: {
-            search: "Cari di tabel:",
+            search: "Cari:",
             lengthMenu: "Tampilkan _MENU_ data",
             info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
             infoEmpty: "Tidak ada data rekap",

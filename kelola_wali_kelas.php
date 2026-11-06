@@ -46,8 +46,7 @@ $hasil = mysqli_query($koneksi, $sql);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2>Kelola Wali Kelas</h2>
-            <p>Selamat datang di halaman Wali Kelas.</p>
+            <h1 class="mb-4">Kelola Wali Kelas</h1>
 
             <div class="mb-3">
                 <a href="dashboard.php" class="btn btn-secondary">
@@ -55,80 +54,86 @@ $hasil = mysqli_query($koneksi, $sql);
                 </a>
 
                 <a href="tambah_wali_kelas.php" class="btn btn-primary">
-                    Tambah Wali Kelas
+                    + Tambah Wali Kelas
                 </a>
             </div>
 
             <!-- TABEL DATA WALI KELAS -->
-            <div class="table-responsive">
+            <div class="card shadow-sm">
+                <div class="card-body">
 
-                <table id="tabelWaliKelas"
-                       class="table table-striped table-bordered table-hover">
+                    <div class="table-responsive">
 
-                    <thead class="table-dark">
-                        <tr>
-                            <th>No</th>
-                            <th>Tahun Ajaran</th>
-                            <th>Kelas</th>
-                            <th>Guru</th>
-                            <th>Tanggal Mulai</th>
-                            <th>Tanggal Selesai</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                        <table id="tabelWaliKelas"
+                               class="table table-striped table-bordered table-hover align-middle w-100">
 
-                    <tbody>
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tahun Ajaran</th>
+                                    <th>Kelas</th>
+                                    <th>Guru</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
+                                    <th>Status</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
 
-                    <?php $no = 1; while ($row = mysqli_fetch_assoc($hasil)) { ?>
+                            <tbody>
 
-                        <tr>
-                            <td><?= $no++; ?></td>
+                            <?php $no = 1; while ($row = mysqli_fetch_assoc($hasil)) { ?>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['nama_tahun_ajaran'] ?? '-'); ?>
-                            </td>
+                                <tr>
+                                    <td><?= $no++; ?></td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['nama_kelas'] ?? '-'); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['nama_tahun_ajaran'] ?? '-'); ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['nama_guru'] ?? '-'); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['nama_kelas'] ?? '-'); ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['tanggal_mulai'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['nama_guru'] ?? '-'); ?>
+                                    </td>
 
-                            <td>
-                                <?php echo htmlspecialchars($row['tanggal_selesai'] ?? ''); ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['tanggal_mulai'] ?? ''); ?>
+                                    </td>
 
-                            <td>
-                                <?= badge_status($row['status_aktif']) ?>
-                            </td>
+                                    <td>
+                                        <?php echo htmlspecialchars($row['tanggal_selesai'] ?? ''); ?>
+                                    </td>
 
-                            <td>
-                                <a href="edit_wali_kelas.php?id=<?php echo urlencode($row['id']); ?>"
-                                   class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
+                                    <td>
+                                        <?= badge_status($row['status_aktif']) ?>
+                                    </td>
 
-                                <a href="hapus_wali_kelas.php?id=<?php echo urlencode($row['id']); ?>"
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Yakin ingin menghapus data wali kelas ini?');">
-                                    Hapus
-                                </a>
-                            </td>
-                        </tr>
+                                    <td>
+                                        <a href="edit_wali_kelas.php?id=<?php echo urlencode($row['id']); ?>"
+                                           class="btn btn-warning btn-sm">
+                                            Edit
+                                        </a>
 
-                    <?php } ?>
+                                        <a href="hapus_wali_kelas.php?id=<?php echo urlencode($row['id']); ?>"
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Yakin ingin menghapus data wali kelas ini?');">
+                                            Hapus
+                                        </a>
+                                    </td>
+                                </tr>
 
-                    </tbody>
+                            <?php } ?>
 
-                </table>
+                            </tbody>
 
+                        </table>
+
+                    </div>
+
+                </div>
             </div>
 
         </main>

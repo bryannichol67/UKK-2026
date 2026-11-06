@@ -38,7 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $v['tanggal_selesai'] = $_POST['tanggal_selesai'];
     $v['status_aktif']    = (int) $_POST['status_aktif'];
 
-    if ($v['tanggal_selesai'] < $v['tanggal_mulai']) {
+    $error_tgl = validasi_tanggal($v['tanggal_mulai'], 'Tanggal mulai')
+              ?: validasi_tanggal($v['tanggal_selesai'], 'Tanggal selesai');
+
+    if ($error_tgl !== '') {
+        $error = $error_tgl;
+    } elseif ($v['tanggal_selesai'] < $v['tanggal_mulai']) {
         $error = 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai.';
     } elseif (!tahun_ajaran_aktif($koneksi, $v['tahun_ajaran_id'])) {
         $error = 'Pilih tahun ajaran yang berstatus aktif.';

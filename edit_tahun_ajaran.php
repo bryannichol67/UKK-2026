@@ -33,6 +33,14 @@ if (isset($_POST['simpan'])) {
     if ($v['tanggal_mulai'] === '')   { $galat['tanggal_mulai']   = 'Tanggal mulai wajib diisi.'; }
     if ($v['tanggal_selesai'] === '') { $galat['tanggal_selesai'] = 'Tanggal selesai wajib diisi.'; }
 
+    // Tanggal minimal tahun 2000
+    foreach (['tanggal_mulai' => 'Tanggal mulai', 'tanggal_selesai' => 'Tanggal selesai'] as $kolom => $label) {
+        if (!isset($galat[$kolom])) {
+            $pesan = validasi_tanggal($v[$kolom], $label);
+            if ($pesan !== '') { $galat[$kolom] = $pesan; }
+        }
+    }
+
     // Hanya boleh ada satu tahun ajaran aktif
     if ($v['status_aktif'] === 1) {
         $aktif = tahun_aktif_lain($koneksi, $id);

@@ -37,7 +37,7 @@ $hasil = mysqli_query($koneksi, $sql);
         <!-- KONTEN -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h2 class="mb-4">Kelola Kelas</h2>
+            <h1 class="mb-4">Kelola Kelas</h1>
 
             <!-- Tombol Navigasi -->
             <div class="mb-3">
@@ -71,9 +71,6 @@ $hasil = mysqli_query($koneksi, $sql);
             <!-- TABEL KELAS -->
             <div class="card shadow-sm">
 
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Daftar Kelas</h5>
-                </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
