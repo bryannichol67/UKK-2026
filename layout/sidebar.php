@@ -18,9 +18,10 @@ $daftar_menu = [
         'penempatan_siswa.php'            => ['Penempatan Siswa', 'diagram-3'],
         'kelola_pelanggaran_kategori.php' => ['Kategori Pelanggaran', 'tags'],
         'kelola_jenis_pelanggaran.php'    => ['Jenis Pelanggaran', 'list-check'],
-        'Laporan.php'                     => ['Laporan', 'file-earmark-text'],
+        'laporan.php'                     => ['Laporan', 'file-earmark-text'],
         'about_me.php'                    => ['About Me', 'person-circle'],
     ],
+    // Guru biasa (sesuai use case)
     'guru' => [
         'dashboard.php'         => ['Dashboard', 'speedometer2'],
         'catat_pelanggaran.php' => ['Catat Pelanggaran', 'pencil-square'],
@@ -28,9 +29,24 @@ $daftar_menu = [
         'riwayat.php'           => ['Riwayat', 'clock-history'],
         'rekap_poin.php'        => ['Rekap Poin', 'bar-chart'],
     ],
+    // Guru yang sudah menjadi wali kelas: menu ringkas
+    'wali_kelas' => [
+        'dashboard.php'  => ['Dashboard', 'speedometer2'],
+        'laporan.php'    => ['Laporan', 'file-earmark-text'],
+        'riwayat.php'    => ['Riwayat', 'clock-history'],
+        'rekap_poin.php' => ['Rekap Poin', 'bar-chart'],
+    ],
 ];
 
-$menu = $daftar_menu[$role] ?? [];
+// Guru yang sudah menjadi wali kelas memakai menu wali kelas
+$kunci_menu = $role;
+$label_role = $role;
+if ($role === 'guru' && !empty($_SESSION['is_wali_kelas'])) {
+    $kunci_menu = 'wali_kelas';
+    $label_role = 'Guru (Wali Kelas)';
+}
+
+$menu = $daftar_menu[$kunci_menu] ?? [];
 
 // Mencetak daftar menu (dipakai desktop & mobile)
 if (!function_exists("cetak_menu")) { function cetak_menu($menu, $current_page, $nama_user, $role)
@@ -209,7 +225,7 @@ if (!empty($menu)) {
 <!-- SIDEBAR (layar besar) -->
 <div class="d-none d-md-block col-md-3 col-lg-2 sb-desktop p-3">
     <div class="mb-4"><?php cetak_brand(); ?></div>
-    <?php cetak_menu($menu, $current_page, $nama_user, $role); ?>
+    <?php cetak_menu($menu, $current_page, $nama_user, $label_role); ?>
 </div>
 
 <!-- TOP BAR (layar kecil): hamburger di kiri + nama aplikasi -->
@@ -233,7 +249,7 @@ if (!empty($menu)) {
             </svg>
         </button>
     </div>
-    <?php cetak_menu($menu, $current_page, $nama_user, $role); ?>
+    <?php cetak_menu($menu, $current_page, $nama_user, $label_role); ?>
 </div>
 
 <script>

@@ -47,4 +47,14 @@ function cek_role($role_diizinkan)
     }
 }
 
+// Wali kelas hanya boleh Laporan, Riwayat, dan Rekap Poin
+function tolak_wali_kelas()
+{
+    if (($_SESSION['role'] ?? '') === 'guru' && !empty($_SESSION['is_wali_kelas'])) {
+        http_response_code(403);
+        echo "Akses ditolak. <a href='laporan.php'>Kembali ke Laporan</a>";
+        exit;
+    }
+}
+
 ?>

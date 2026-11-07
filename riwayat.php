@@ -7,6 +7,10 @@ include 'includes/cek_session.php';
 // Menghubungkan ke database
 include 'config/koneksi.php';
 
+// Wali kelas hanya boleh melihat data kelas yang diwalikan
+$batasi_wali = (($_SESSION['role'] ?? '') === 'guru' && !empty($_SESSION['is_wali_kelas']));
+$kelas_wali  = (int) ($_SESSION['kelas_wali_id'] ?? 0);
+
 // Mengambil kata pencarian
 $cari = isset($_GET['cari'])
     ? mysqli_real_escape_string($koneksi, trim($_GET['cari']))
@@ -21,6 +25,11 @@ $status = isset($_GET['status'])
 $sql = "SELECT *
         FROM t_pelanggaran_siswa
         WHERE 1=1";
+
+// Batasi ke kelas wali (kelas_wali = 0 berarti tidak ada kelas, tampil kosong)
+if ($batasi_wali) {
+    $sql .= " AND kelas_id = $kelas_wali";
+}
 
 // Pencarian berdasarkan nama siswa, pelanggaran, kelas, atau guru
 if ($cari != '') {

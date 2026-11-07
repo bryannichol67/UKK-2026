@@ -3,6 +3,7 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 cek_role(['guru', 'admin']);
+tolak_wali_kelas();
 
 // Data catatan pelanggaran
 $sql = "SELECT

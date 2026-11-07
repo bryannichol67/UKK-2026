@@ -9,6 +9,15 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Laporan hanya untuk admin dan guru yang menjadi wali kelas
+$is_admin = ($_SESSION['role'] ?? '') === 'admin';
+$is_wali  = ($_SESSION['role'] ?? '') === 'guru' && !empty($_SESSION['is_wali_kelas']);
+if (!$is_admin && !$is_wali) {
+    http_response_code(403);
+    echo "Akses ditolak. <a href='dashboard.php'>Kembali ke Dashboard</a>";
+    exit;
+}
+
 // Mengambil data laporan pelanggaran siswa.
 // Kolom "Jenis Pelanggaran" diambil dari tabel jenis pelanggaran (t_pelanggaran),
 // sama persis dengan yang tampil di halaman Kelola Jenis Pelanggaran.
@@ -20,6 +29,7 @@ $sql = "SELECT
         FROM t_pelanggaran_siswa ps
         JOIN t_siswa s ON ps.siswa_id = s.id
         JOIN t_pelanggaran p ON ps.pelanggaran_id = p.id
+        " . ($is_wali ? "WHERE ps.kelas_id = " . (int) ($_SESSION['kelas_wali_id'] ?? 0) . " " : "") . "
         ORDER BY ps.id DESC";
 $hasil = mysqli_query($koneksi, $sql);
 ?>
@@ -60,6 +70,7 @@ $hasil = mysqli_query($koneksi, $sql);
                     Kembali ke Dashboard
                 </a>
 
+                <?php if ($is_admin) { ?>
                 <a href="cetak_laporan.php" target="_blank" class="btn btn-primary">
                     Cetak Laporan
                 </a>
@@ -67,6 +78,7 @@ $hasil = mysqli_query($koneksi, $sql);
                 <a href="export_laporan.php" class="btn btn-success">
                     Export Excel
                 </a>
+                <?php } ?>
             </div>
 
             <!-- TABEL LAPORAN -->

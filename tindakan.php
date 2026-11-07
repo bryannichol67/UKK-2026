@@ -2,6 +2,7 @@
 // tindakan.php
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
+tolak_wali_kelas();
 
 // Proses menyimpan tindakan
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

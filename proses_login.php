@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 require_once "config/koneksi.php";
@@ -83,6 +82,31 @@ $_SESSION['nama'] = $nama;
 $_SESSION['email'] = $email_db;
 $_SESSION['role'] = $role;
 
+// Cek apakah guru ini sedang menjadi wali kelas (tahun ajaran aktif)
+$_SESSION['is_wali_kelas'] = false;
+unset($_SESSION['guru_id'], $_SESSION['kelas_wali_id']);
+
+if ($role === 'guru') {
+    $sql_wali = "SELECT g.id AS guru_id, wk.kelas_id
+                 FROM t_guru g
+                 JOIN t_wali_kelas wk ON wk.guru_id = g.id AND wk.status_aktif = 1
+                 JOIN t_tahun_ajaran ta ON ta.id = wk.tahun_ajaran_id AND ta.status_aktif = 1
+                 WHERE g.user_id = ?
+                 LIMIT 1";
+    $stmt_wali = mysqli_prepare($koneksi, $sql_wali);
+    if ($stmt_wali) {
+        mysqli_stmt_bind_param($stmt_wali, "i", $id);
+        mysqli_stmt_execute($stmt_wali);
+        mysqli_stmt_bind_result($stmt_wali, $guru_id, $kelas_wali_id);
+        if (mysqli_stmt_fetch($stmt_wali)) {
+            $_SESSION['is_wali_kelas'] = true;
+            $_SESSION['guru_id'] = $guru_id;
+            $_SESSION['kelas_wali_id'] = $kelas_wali_id;
+        }
+        mysqli_stmt_close($stmt_wali);
+    }
+}
+
 // Arahkan sesuai role
 if ($role === 'admin') {
     header("Location: dashboard.php");
@@ -94,4 +118,3 @@ if ($role === 'guru') {
     exit;
 }
 ?>
-```

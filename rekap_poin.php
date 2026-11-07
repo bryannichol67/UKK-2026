@@ -7,6 +7,10 @@
 include 'includes/cek_session.php';
 include 'config/koneksi.php';
 
+// Wali kelas hanya boleh melihat data kelas yang diwalikan
+$batasi_wali = (($_SESSION['role'] ?? '') === 'guru' && !empty($_SESSION['is_wali_kelas']));
+$kelas_wali  = (int) ($_SESSION['kelas_wali_id'] ?? 0);
+
 // ============================================
 // 2. MENGAMBIL INPUT PENCARIAN DAN FILTER
 // ============================================
@@ -27,8 +31,9 @@ $kelas_sql = mysqli_real_escape_string($koneksi, $kelas_filter);
 $query_kelas = mysqli_query(
     $koneksi,
     "SELECT id, nama
-     FROM t_kelas
-     ORDER BY nama ASC"
+     FROM t_kelas"
+    . ($batasi_wali ? " WHERE id = $kelas_wali" : "")
+    . " ORDER BY nama ASC"
 );
 
 if (!$query_kelas) {
@@ -88,7 +93,10 @@ if ($cari != '') {
 // ============================================
 // 6. FILTER KELAS
 // ============================================
-if ($kelas_filter != '') {
+if ($batasi_wali) {
+    // Wali kelas: paksa hanya kelasnya, abaikan filter dari URL
+    $sql .= " AND k.id = $kelas_wali";
+} elseif ($kelas_filter != '') {
     $sql .= " AND k.id = '$kelas_sql'";
 }
 
