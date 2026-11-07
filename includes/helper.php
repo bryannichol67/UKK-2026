@@ -6,14 +6,9 @@
 //   3. validasi_guru()       -> aturan isian form guru (tambah & edit)
 //   4. cek_identitas_unik()  -> NIS, NISN, dan NIP tidak boleh sama
 
-// Batas tahun paling awal untuk SEMUA isian tanggal (satu tempat supaya seragam)
-if (!defined('TAHUN_MIN')) {
-    define('TAHUN_MIN', 2000);
-}
-
-// Batas tahun lahir siswa (sama dengan batas tanggal lain)
+// Batas tahun lahir siswa (tidak boleh lebih kecil dari tahun ini)
 if (!defined('TAHUN_LAHIR_MIN')) {
-    define('TAHUN_LAHIR_MIN', TAHUN_MIN);
+    define('TAHUN_LAHIR_MIN', 2000);
 }
 
 // Panjang maksimal NIS dan NISN (digit angka)
@@ -379,26 +374,4 @@ function siswa_sudah_ditempatkan($koneksi, $siswa_id, $tahun_id, $id = 0)
     return (bool) ambil_satu($koneksi,
         "SELECT id FROM t_kelas_siswa WHERE status_aktif = 1 AND siswa_id = ? AND tahun_ajaran_id = ? AND id <> ? LIMIT 1",
         'iii', (int) $siswa_id, (int) $tahun_id, (int) $id);
-}
-
-/* ------------------------------------------------------------------
-   TANGGAL: semua isian tanggal minimal tahun 2000
-   ------------------------------------------------------------------ */
-// Nilai untuk atribut min="" pada <input type="date">
-function tanggal_min()
-{
-    return TAHUN_MIN . '-01-01';
-}
-
-// Hasil: teks pesan error, atau '' jika tanggal benar
-function validasi_tanggal($nilai, $label = 'Tanggal')
-{
-    $tgl = DateTime::createFromFormat('Y-m-d', (string) $nilai);
-    if (!$tgl || $tgl->format('Y-m-d') !== $nilai) {
-        return $label . ' tidak valid.';
-    }
-    if ((int) $tgl->format('Y') < TAHUN_MIN) {
-        return $label . ' tidak boleh sebelum tahun ' . TAHUN_MIN . '.';
-    }
-    return '';
 }

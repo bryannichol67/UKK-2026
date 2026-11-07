@@ -1,8 +1,4 @@
 <?php
-require_once 'cek_akses.php';
-require_once 'config/koneksi.php';
-require_once 'crud.php';
-cek_role(['admin']);
-
-$opsi = require 'opsi_kelas.php';
-proses_halaman($koneksi, 't_kelas', $opsi, 'tambah');
+// Jalur lama dinonaktifkan: aturan revisi hanya ada di tambah_kelas.php
+header("Location: tambah_kelas.php");
+exit;

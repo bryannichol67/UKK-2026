@@ -1,8 +1,5 @@
 <?php
-require_once 'cek_akses.php';
-require_once 'config/koneksi.php';
-require_once 'crud.php';
-cek_role(['admin']);
-
-$opsi = require 'opsi_tahun_ajaran.php';
-proses_halaman($koneksi, 't_tahun_ajaran', $opsi, 'ubah');
+// Jalur lama dinonaktifkan: aturan revisi hanya ada di edit_tahun_ajaran.php
+$id = (int) ($_GET["id"] ?? $_POST["id"] ?? 0);
+header("Location: edit_tahun_ajaran.php?id=" . $id);
+exit;

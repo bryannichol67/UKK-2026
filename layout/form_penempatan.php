@@ -44,13 +44,13 @@
     <div class="row">
         <div class="col-md-6 mb-3">
             <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-            <input type="date" name="tanggal_mulai" id="tanggal_mulai" min="<?= tanggal_min(); ?>" class="form-control"
+            <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control"
                    value="<?= htmlspecialchars($v['tanggal_mulai']); ?>" required>
         </div>
 
         <div class="col-md-6 mb-3">
             <label for="tanggal_selesai" class="form-label">Tanggal Selesai</label>
-            <input type="date" name="tanggal_selesai" id="tanggal_selesai" min="<?= tanggal_min(); ?>" class="form-control"
+            <input type="date" name="tanggal_selesai" id="tanggal_selesai" class="form-control"
                    value="<?= htmlspecialchars($v['tanggal_selesai']); ?>" required>
         </div>
     </div>

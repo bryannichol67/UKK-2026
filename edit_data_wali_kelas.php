@@ -1,8 +1,5 @@
 <?php
-require_once 'cek_akses.php';
-require_once 'config/koneksi.php';
-require_once 'crud.php';
-cek_role(['admin']);
-
-$opsi = require 'opsi_wali_kelas.php';
-halaman_form($koneksi, 't_wali_kelas', $opsi, 'ubah');
+// Jalur lama dinonaktifkan: aturan revisi hanya ada di edit_wali_kelas.php
+$id = (int) ($_GET["id"] ?? $_POST["id"] ?? 0);
+header("Location: edit_wali_kelas.php?id=" . $id);
+exit;
