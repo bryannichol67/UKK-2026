@@ -313,6 +313,25 @@ function validasi_kelas(array $v, array $asli = [])
 }
 
 /* ------------------------------------------------------------------
+   5b. VALIDASI TANGGAL (format Y-m-d dari input type="date")
+       Hasil: '' jika valid, selain itu berisi pesan galat.
+   ------------------------------------------------------------------ */
+if (!function_exists('validasi_tanggal')) {
+    function validasi_tanggal($tanggal, $label = 'Tanggal')
+    {
+        $d = DateTime::createFromFormat('Y-m-d', (string) $tanggal);
+
+        if (!$d || $d->format('Y-m-d') !== $tanggal) {
+            return $label . ' tidak valid.';
+        }
+        if ((int) $d->format('Y') < TAHUN_LAHIR_MIN) {
+            return $label . ' minimal tahun ' . TAHUN_LAHIR_MIN . '.';
+        }
+        return '';
+    }
+}
+
+/* ------------------------------------------------------------------
    6. TAHUN AJARAN: hanya boleh ada satu yang aktif
    ------------------------------------------------------------------ */
 // Tahun ajaran LAIN yang sedang aktif ($id = tahun yang sedang diedit, 0 jika baru)

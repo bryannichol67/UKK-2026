@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include "config/koneksi.php";
@@ -199,4 +198,3 @@ $cita_cita = "Pengusaha";
 
 </body>
 </html>
-```
